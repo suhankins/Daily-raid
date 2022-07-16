@@ -29,12 +29,6 @@ function MissionSelectionGui:_raid_list_data_source()
 		--selected_color = tweak_data.gui.colors.raid_red,
 		color = tweak_data.gui.colors.raid_white,
 		selected_color = tweak_data.gui.colors.raid_red,
-		breadcrumb = {
-			category = BreadcrumbManager.CATEGORY_NEW_RAID,
-			identifiers = {
-				daily_mission_name
-			}
-		},
 		debug = mission_data.debug,
 		unlocked = true,
 		daily = {
@@ -339,7 +333,9 @@ function MissionSelectionGui:_check_difficulty_warning()
 		difficulty_available, difficulty_completed = managers.progression:get_mission_progression(tweak_data.operations.missions[self._selected_job_id].job_type, self._selected_job_id)
 	end
 
-	if (difficulty_available < difficulty) or (self._daily and difficulty ~= 3) then
+	--THIS IS JUST FOR TESTING, REPLACE LATER
+	--if (difficulty_available < difficulty) or (self._daily and difficulty ~= 3) then
+	if (difficulty_available < difficulty) then
 		local message = ""
 		if difficulty_available < difficulty then
 			message = managers.localization:text("raid_difficulty_warning", {
@@ -347,7 +343,7 @@ function MissionSelectionGui:_check_difficulty_warning()
 				NEEDED_DIFFICULTY = managers.localization:text("menu_difficulty_" .. tostring(difficulty - 1))
 			})
 		else
-			message = "Daily Raid can only be played on HARD difficulty"
+			message = "Daily Bounty can only be played on HARD difficulty"
 		end
 
 		self._difficulty_warning_panel:get_engine_panel():stop()
@@ -381,9 +377,9 @@ end
 Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", function(self, job_id)
 	if Network:is_server() and self._daily then
 		managers.challenge_cards.forced_card = self._daily.challenge_card
-		managers.challenge_cards.reward = self._daily.reward
+		managers.challenge_cards.daily_reward = self._daily.reward
 	else
 		managers.challenge_cards.forced_card = nil
-		managers.challenge_cards.reward = nil
+		managers.challenge_cards.daily_reward = nil
 	end
 end)

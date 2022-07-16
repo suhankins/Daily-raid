@@ -7,10 +7,8 @@
 		<hook source_file="lib/managers/menu/raid_menu/controls/raidguicontrollistitemraids" file="raidguicontrollistitemraids.lua"/>
 
 		<hook source_file="lib/managers/menu/raid_menu/readyupgui" file="readyupgui.lua"/>
-		<hook source_file="lib/managers/menu/raid_menu/challengecardsgui" file="challengecardsgui.lua"/>
 
-		<hook source_file="lib/managers/lootdropmanager" file="lootdropmanager.lua"/>
-		<hook source_file="lib/managers/mission/elementmissionend" file="elementmissionend.lua"/>
+		<hook source_file="lib/managers/raidjobmanager" file="raidjobmanager.lua"/>
     </hooks>
 	<!--<auto_updates
         provider="modworkshop"
