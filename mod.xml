@@ -1,0 +1,19 @@
+<table name="Daily raid"
+		author="Punished Bernadetta"
+		color="Color('bf204b')"
+		description="">
+    <hooks>
+		<hook source_file="lib/managers/menu/raid_menu/missionselectiongui" file="missionselectiongui.lua"/>
+		<hook source_file="lib/managers/menu/raid_menu/controls/raidguicontrollistitemraids" file="raidguicontrollistitemraids.lua"/>
+
+		<hook source_file="lib/managers/menu/raid_menu/readyupgui" file="readyupgui.lua"/>
+		<hook source_file="lib/managers/menu/raid_menu/challengecardsgui" file="challengecardsgui.lua"/>
+
+		<hook source_file="lib/managers/lootdropmanager" file="lootdropmanager.lua"/>
+		<hook source_file="lib/managers/mission/elementmissionend" file="elementmissionend.lua"/>
+    </hooks>
+	<!--<auto_updates
+        provider="modworkshop"
+        id=""
+		version="1.0"/>-->
+</table>
