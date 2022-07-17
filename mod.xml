@@ -1,7 +1,8 @@
 <table name="Daily raid"
 		author="Punished Bernadetta"
 		color="Color('bf204b')"
-		description="">
+		description="",
+		global_key="DailyRaid">
     <hooks>
 		<hook source_file="lib/managers/menu/raid_menu/missionselectiongui" file="missionselectiongui.lua"/>
 		<hook source_file="lib/managers/menu/raid_menu/controls/raidguicontrollistitemraids" file="raidguicontrollistitemraids.lua"/>
