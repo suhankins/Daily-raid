@@ -11,6 +11,9 @@
 
 		<hook source_file="lib/managers/raidjobmanager" file="raidjobmanager.lua"/>
     </hooks>
+	<localization directory="loc" default="english.json">
+		<loc file="english.json" language="english"/>
+	</localization>
 	<!--<auto_updates
         provider="modworkshop"
         id=""

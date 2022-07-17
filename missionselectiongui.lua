@@ -22,14 +22,11 @@ function MissionSelectionGui:_raid_list_data_source()
 	}
 	
 	table.insert(raid_list, 1, {
-		text = "DAILY BOUNTY: " .. item_text,
+		text = managers.localization:text("daily_daily_bounty") .. ": " .. item_text,
 		value = daily_mission_name,
 		icon = item_icon,
-		--color = tweak_data.gui.colors.raid_dark_red,
-		--selected_color = tweak_data.gui.colors.raid_red,
 		color = tweak_data.gui.colors.raid_white,
 		selected_color = tweak_data.gui.colors.raid_red,
-		debug = mission_data.debug,
 		unlocked = true,
 		daily = {
 			challenge_card = daily_forced_card,
@@ -114,7 +111,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		w = 255,
 		align = "left",
 		vertical = "left",
-		text = "Forced Challenge Card",
+		text = managers.localization:text("daily_forced_challenge_card"),
 		y = card_y,
 		x = text_info_pos,
 		color = tweak_data.gui.colors.raid_red,
@@ -343,7 +340,7 @@ function MissionSelectionGui:_check_difficulty_warning()
 				NEEDED_DIFFICULTY = managers.localization:text("menu_difficulty_" .. tostring(difficulty - 1))
 			})
 		else
-			message = "Daily Bounty can only be played on HARD difficulty"
+			message = managers.localization:text("daily_daily_bounty_difficulty")
 		end
 
 		self._difficulty_warning_panel:get_engine_panel():stop()

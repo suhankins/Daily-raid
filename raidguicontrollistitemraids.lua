@@ -2,7 +2,7 @@ Hooks:PostHook(RaidGUIControlListItemRaids, "init", "daily_raid_reward_display",
 	if self._data.daily then
 		self._difficulty_indicator:hide()
 		self:_layout_consumable_mission_label()
-		self._consumable_mission_label:set_text("REWARD: " ..  self._data.daily.reward .. " GOLD BARS")
+		self._consumable_mission_label:set_text(managers.localization:text("daily_reward") .. ": " ..  self._data.daily.reward .. " " .. string.upper(managers.localization:text("menu_loot_screen_gold_bars")))
 		local _, _, w, h = self._consumable_mission_label:text_rect()
 		self._consumable_mission_label:set_w(w)
 		self._consumable_mission_label:set_h(h)
