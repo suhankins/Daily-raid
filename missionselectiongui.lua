@@ -5,10 +5,30 @@ local original_raid_list_data_source = MissionSelectionGui._raid_list_data_sourc
 function MissionSelectionGui:_raid_list_data_source()
 	local raid_list = original_raid_list_data_source(self)
 
-	local daily_mission_name = "tnd"
-	local daily_forced_card = "ra_slasher_movie"
+	--Seeding the RNG
+	local seed = tonumber(os.date('!%Y%m%d', os.time()))
+	math.randomseed(seed)
 
-	local mission_data = tweak_data.operations:mission_data(daily_mission_name)
+	--Generating random mission
+	local index = tweak_data.operations:get_raids_index()
+	local daily_mission_name
+	local mission_data
+	--Consumable dailies crash the game
+	repeat
+		daily_mission_name = index[math.random(#index)]
+		mission_data = tweak_data.operations:mission_data(daily_mission_name)
+	until not mission_data.consumable
+
+	--Generating random card
+	local cards_index = tweak_data.challenge_cards.cards_index
+	local daily_forced_card
+	local card_data
+	--Weekly Operations(C) are not implemented yet, so no operation cards for normal raids
+	repeat
+		daily_forced_card = cards_index[math.random(#cards_index)]
+		card_data = tweak_data.challenge_cards:get_card_by_key_name(daily_forced_card)
+	until card_data.card_type ~= tweak_data.challenge_cards.CARD_TYPE_RAID and card_data.card_category == tweak_data.challenge_cards.CARD_CATEGORY_CHALLENGE_CARD
+
 	local item_text = self:translate(mission_data.name_id)
 	local item_icon_name = mission_data.icon_menu
 	local item_icon = {
@@ -152,7 +172,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		texture_rect = tweak_data.gui.icons.ico_bonus.texture_rect
 	})
 	self._bonus_effect_label = self._card_panel:label({
-		w = 220,
+		w = 190,
 		name = "bonus_effect_label",
 		h = 64,
 		wrap = true,
@@ -176,7 +196,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		texture_rect = tweak_data.gui.icons.ico_malus.texture_rect
 	})
 	self._malus_effect_label = self._card_panel:label({
-		w = 220,
+		w = 190,
 		name = "malus_effect_label",
 		h = 64,
 		wrap = true,
