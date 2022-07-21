@@ -9,6 +9,8 @@
 
 		<hook source_file="lib/managers/menu/raid_menu/readyupgui" file="readyupgui.lua"/>
 
+		<hook source_file="lib/managers/menu/raid_menu/raidmenucallbackhandler" file="raidmenucallbackhandler.lua"/>
+
 		<hook source_file="lib/managers/raidjobmanager" file="raidjobmanager.lua"/>
     </hooks>
 	<localization directory="loc" default="english.json">

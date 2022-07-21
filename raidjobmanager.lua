@@ -24,3 +24,22 @@ end
 function RaidJobManager:_delayed_end()
 	original(Global.RaidJobManager, Global.restart_camp, false)
 end
+
+function RaidJobManager:on_mission_restart()
+	managers.greed:on_level_exited(false)
+	managers.consumable_missions:on_level_exited(false)
+	managers.statistics:reset_session()
+	managers.lootdrop:reset_loot_value_counters()
+	self:on_mission_ended()
+	self:on_mission_started()
+	if not managers.challenge_cards.forced_card then
+		managers.challenge_cards:remove_active_challenge_card()
+	end
+end
+
+Hooks:PostHook(RaidJobManager, "on_mission_started", "daily_raid_sync_card_on_start", function(self)
+	if Network:is_server() and managers.challenge_cards.forced_card then
+		managers.network:session():send_to_peers_synched("sync_active_challenge_card", managers.challenge_cards.forced_card, true, "active")
+		managers.network:session():send_to_peers_synched("sync_activate_challenge_card")
+	end
+end)

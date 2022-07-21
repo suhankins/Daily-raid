@@ -2,5 +2,6 @@
     "daily_reward": "REWARD",
     "daily_daily_bounty": "DAILY BOUNTY",
     "daily_forced_challenge_card": "Forced Challenge Card",
-    "daily_daily_bounty_difficulty": "Daily Bounty can only be collected on HARD difficulty"
+    "daily_daily_bounty_difficulty": "Daily Bounty can only be collected on HARD difficulty",
+    "dialog_mp_restart_mission_no_card_host_message": "Are you sure you want to restart the mission?"
 }
