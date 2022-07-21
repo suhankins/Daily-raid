@@ -5,29 +5,11 @@ local original_raid_list_data_source = MissionSelectionGui._raid_list_data_sourc
 function MissionSelectionGui:_raid_list_data_source()
 	local raid_list = original_raid_list_data_source(self)
 
-	--Seeding the RNG
-	local seed = tonumber(os.date('!%Y%m%d', os.time()))
-	math.randomseed(seed)
+	if Global.game_settings.single_player or not DailyRaidManager:can_do_new_daily() then
+		return raid_list
+	end
 
-	--Generating random mission
-	local index = tweak_data.operations:get_raids_index()
-	local daily_mission_name
-	local mission_data
-	--Consumable dailies crash the game
-	repeat
-		daily_mission_name = index[math.random(#index)]
-		mission_data = tweak_data.operations:mission_data(daily_mission_name)
-	until not mission_data.consumable
-
-	--Generating random card
-	local cards_index = tweak_data.challenge_cards.cards_index
-	local daily_forced_card
-	local card_data
-	--Weekly Operations(C) are not implemented yet, so no operation cards for normal raids
-	repeat
-		daily_forced_card = cards_index[math.random(#cards_index)]
-		card_data = tweak_data.challenge_cards:get_card_by_key_name(daily_forced_card)
-	until card_data.card_type ~= tweak_data.challenge_cards.CARD_TYPE_RAID and card_data.card_category == tweak_data.challenge_cards.CARD_CATEGORY_CHALLENGE_CARD
+	local seed, daily_mission_name, mission_data, daily_forced_card, reward = DailyRaidManager:generate_daily()
 
 	local item_text = self:translate(mission_data.name_id)
 	local item_icon_name = mission_data.icon_menu
@@ -50,7 +32,8 @@ function MissionSelectionGui:_raid_list_data_source()
 		unlocked = true,
 		daily = {
 			challenge_card = daily_forced_card,
-			reward = 25
+			reward = reward,
+			seed = seed
 		}
 	})
 
@@ -99,6 +82,9 @@ function MissionSelectionGui:_animate_show_card()
 end
 
 Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_settings", function(self)
+	if Global.game_settings.single_player then
+		return
+	end
 	self._card_animation_t = 1
 	local card_panel_params = {
 		name = "card_panel"
@@ -292,7 +278,9 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 			self._bonus_effect_label:set_text(bonus_description)
 			self._malus_effect_label:set_text(malus_description)
 		else
-			self._card_panel:animate(callback(self, self, "_animate_hide_card"))
+			if not Global.game_settings.single_player then
+				self._card_panel:animate(callback(self, self, "_animate_hide_card"))
+			end
 		end
 
 		local stamp_texture = tweak_data.gui.icons[MissionSelectionGui.PAPER_STAMP_ICON]
@@ -395,8 +383,10 @@ Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", functi
 	if Network:is_server() and self._daily then
 		managers.challenge_cards.forced_card = self._daily.challenge_card
 		managers.challenge_cards.daily_reward = self._daily.reward
+		managers.challenge_cards.daily_seed = self._daily.seed
 	else
 		managers.challenge_cards.forced_card = nil
 		managers.challenge_cards.daily_reward = nil
+		managers.challenge_cards.daily_seed = nil
 	end
 end)

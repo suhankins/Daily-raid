@@ -12,10 +12,17 @@
 		<hook source_file="lib/managers/menu/raid_menu/raidmenucallbackhandler" file="raidmenucallbackhandler.lua"/>
 
 		<hook source_file="lib/managers/raidjobmanager" file="raidjobmanager.lua"/>
+
+		<hook source_file="lib/setups/setup" file="DailyRaidManager.lua"/>
     </hooks>
 	<localization directory="loc" default="english.json">
 		<loc file="english.json" language="english"/>
 	</localization>
+	<options save_file="daily_raid.txt" build_menu="false">
+		<options>
+			<option name="last_finished" type="number" default_value="0"/>
+        </options>
+    </options>
 	<!--<auto_updates
         provider="modworkshop"
         id=""

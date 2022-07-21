@@ -13,6 +13,8 @@ function RaidJobManager:external_end_mission(restart_camp, is_failed)
 			Global.RaidJobManager = self
 			Global.restart_camp = restart_camp
 
+			DailyRaidManager:job_finished(managers.challenge_cards.daily_seed)
+
 			DelayedCalls:Add("delay_mission_end", 3, self._delayed_end)
 			return
 		end
