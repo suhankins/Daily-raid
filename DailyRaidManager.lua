@@ -76,7 +76,7 @@ if not DailyRaidManager then
 	    repeat
 	    	daily_forced_card = cards_index[math.random(#cards_index)]
 	    	card_data = tweak_data.challenge_cards:get_card_by_key_name(daily_forced_card)
-	    until card_data.card_type ~= tweak_data.challenge_cards.CARD_TYPE_RAID and card_data.card_category == tweak_data.challenge_cards.CARD_CATEGORY_CHALLENGE_CARD
+	    until card_data.card_category == tweak_data.challenge_cards.CARD_CATEGORY_CHALLENGE_CARD
 
         --Generating gold
         local reward = self:generate_gold(daily_mission_name) + self:generate_gold(card_data.rarity)
