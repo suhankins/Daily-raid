@@ -1,10 +1,8 @@
---I'm not sure if delaying end of the mission by a couple of seconds
---is even necessary...
-local original = RaidJobManager.external_end_mission
-
-function RaidJobManager:external_end_mission(restart_camp, is_failed)
+--Awarding gold on success
+Hooks:PreHook(RaidJobManager, "external_end_mission", "daily_raid_reward_gold", function(self, restart_camp, is_failed)
 	if self._current_job and not is_failed then
 		if Network:is_server() and managers.challenge_cards.forced_card and managers.challenge_cards:get_active_card_status() ~= managers.challenge_cards.CARD_STATUS_FAILED then
+			--gold_awarded_in_mission counter only increases by 1 when we collect an item, so we gotta collect a lot of them
 			for i = 1,managers.challenge_cards.daily_reward,1 do
 				local greed_item = World:spawn_unit(Idstring("units/vanilla/pickups/pku_loot/pku_loot_desk_golden_inkwell/pku_loot_desk_golden_inkwell"), Vector3(0, 0, 0), Rotation(0, 0, 0))
 				local value = managers.greed:loot_needed_for_gold_bar()
@@ -16,18 +14,9 @@ function RaidJobManager:external_end_mission(restart_camp, is_failed)
 			Global.restart_camp = restart_camp
 
 			DailyRaidManager:job_finished(managers.challenge_cards.daily_seed)
-
-			DelayedCalls:Add("delay_mission_end", 3, self._delayed_end)
-			return
 		end
     end
-
-	return original(self, restart_camp, is_failed)
-end
-
-function RaidJobManager:_delayed_end()
-	original(Global.RaidJobManager, Global.restart_camp, false)
-end
+end)
 
 --Not very clean way to do this
 --Making it so restart doesn't remove daily card
