@@ -9,6 +9,7 @@ function RaidMenuCallbackHandler:restart_mission(item)
     if managers.vote:option_vote_restart() then
         dialog_data["text"] = managers.localization:text("dialog_mp_restart_level_message")
     elseif managers.challenge_cards.forced_card then
+		--This is the only change :/
         dialog_data["text"] = managers.localization:text("dialog_mp_restart_mission_no_card_host_message")
     else
         dialog_data["text"] = managers.localization:text("dialog_mp_restart_mission_host_message")

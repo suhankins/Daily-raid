@@ -1,8 +1,12 @@
+--Daily Bounty icon
 DB:create_entry("texture", "ui/atlas/raid_bounty", ModPath .. "assets/bounty.dds")
 
+--We add daily to the list of raids by intercepting real list
+--and adding daily to it
 local original_raid_list_data_source = MissionSelectionGui._raid_list_data_source
 
 function MissionSelectionGui:_raid_list_data_source()
+	--Intercepting the list
 	local raid_list = original_raid_list_data_source(self)
 
 	if Global.game_settings.single_player or not DailyRaidManager:can_do_new_daily() then
@@ -81,7 +85,9 @@ function MissionSelectionGui:_animate_show_card()
 	self._card_animation_t = 0
 end
 
+--Creates a card display
 Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_settings", function(self)
+	--Card display crashes the game in single player
 	if Global.game_settings.single_player then
 		return
 	end
@@ -110,6 +116,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 
 	local text_info_pos = width + 25
 
+	--Text "FORCED DAILY CARD"
 	local params_card_title_right = {
 		name = "card_title_label_right",
 		h = 72,
@@ -126,6 +133,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 	}
 	self._card_title_label_right = self._card_panel:label(params_card_title_right)
 
+	--Card name
 	local params_card_name_right = {
 		name = "card_name_label_right",
 		h = 72,
@@ -147,6 +155,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 
 	local desc_x = text_info_pos + 65
 
+	--Positive effect display
 	self._bonus_effect_icon = self._card_panel:image({
 		name = "bonus_effect_icon",
 		h = 64,
@@ -171,6 +180,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		font_size = 16,
 		color = tweak_data.gui.colors.raid_grey
 	})
+	--Negative effect display
 	self._malus_effect_icon = self._card_panel:image({
 		name = "malus_effect_icon",
 		h = 64,
@@ -197,13 +207,16 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 	})
 end)
 
+--This isn't the cleanest way to do it, but so be it
 function MissionSelectionGui:_on_raid_clicked(raid_data)
+	--If we clicked the same thing, no reason to change anything
 	if raid_data.daily ~= self._daily or self._selected_job_id ~= raid_data.value then
 		self:_stop_mission_briefing_audio()
 	else
 		return
 	end
 
+	--Saving daily data
 	self._daily = raid_data.daily
 
 	local difficulty_available = managers.progression:get_mission_progression(tweak_data.operations.missions[raid_data.value].job_type, raid_data.value)
@@ -221,6 +234,8 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 
 	local job_tweak_data = tweak_data.operations.missions[self._selected_job_id]
 
+	--This line is very long, but it boils down to
+	--"If mission is not unlock but needs to be unlocked to be played, display locked screen"
 	if not managers.progression:mission_unlocked(job_tweak_data.job_type, self._selected_job_id) and not job_tweak_data.consumable and not job_tweak_data.debug and not raid_data.daily then
 		if Network:is_server() then
 			self._start_disabled_message:set_text(self:translate("raid_locked_progression", true))
@@ -241,6 +256,7 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 
 			self:set_difficulty_stepper_data(difficulty_available, difficulty_completed)
 		else
+			--Dailies have forced difficulty
 			self._difficulty_stepper:set_disabled_items({false, false, true, false})
 			self._difficulty_stepper:set_value_and_render("difficulty_3", true)
 		end
@@ -259,7 +275,7 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 			self._primary_paper_difficulty_indicator:set_visible(false)
 		elseif raid_data.daily then
 			self._primary_paper_subtitle:set_visible(true)
-			self._primary_paper_subtitle:set_text("DAILY RAID")
+			self._primary_paper_subtitle:set_text(self:translate("daily_daily_bounty", true))
 			self._primary_paper_difficulty_indicator:set_visible(false)
 		elseif difficulty_available and difficulty_completed then
 			self._primary_paper_subtitle:set_visible(false)
@@ -268,6 +284,7 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 		end
 
 		if raid_data.daily then
+			--Showing card
 			self._card_panel:animate(callback(self, self, "_animate_show_card"))
 
 			local card_data = tweak_data.challenge_cards:get_card_by_key_name(raid_data.daily.challenge_card)
@@ -278,7 +295,9 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 			self._bonus_effect_label:set_text(bonus_description)
 			self._malus_effect_label:set_text(malus_description)
 		else
+			--In single player we don't even create card display
 			if not Global.game_settings.single_player then
+				--Hide card
 				self._card_panel:animate(callback(self, self, "_animate_hide_card"))
 			end
 		end
@@ -316,6 +335,8 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 	end
 end
 
+--Again, not the cleanest way to do this stuff
+--Displays warning when selecting locked difficulty
 function MissionSelectionGui:_check_difficulty_warning()
 	if self._selected_job_id and tweak_data.operations.missions[self._selected_job_id].consumable then
 		self._difficulty_warning_panel:get_engine_panel():stop()
@@ -334,13 +355,12 @@ function MissionSelectionGui:_check_difficulty_warning()
 	local difficulty_available, difficulty_completed = 99, 0
 	local difficulty = tweak_data:difficulty_to_index(self._difficulty_stepper:get_value())
 
+	--Dailies don't need to known what difficulties are available
 	if not self._daily then
 		difficulty_available, difficulty_completed = managers.progression:get_mission_progression(tweak_data.operations.missions[self._selected_job_id].job_type, self._selected_job_id)
 	end
 
-	--THIS IS JUST FOR TESTING, REPLACE LATER
-	--if (difficulty_available < difficulty) or (self._daily and difficulty ~= 3) then
-	if (difficulty_available < difficulty) then
+	if (difficulty_available < difficulty) or (self._daily and difficulty ~= 3) then
 		local message = ""
 		if difficulty_available < difficulty then
 			message = managers.localization:text("raid_difficulty_warning", {
@@ -381,6 +401,7 @@ end
 
 Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", function(self, job_id)
 	if Network:is_server() and self._daily then
+		--Saving all the stuff for daily cards
 		managers.challenge_cards.forced_card = self._daily.challenge_card
 		managers.challenge_cards.daily_reward = self._daily.reward
 		managers.challenge_cards.daily_seed = self._daily.seed

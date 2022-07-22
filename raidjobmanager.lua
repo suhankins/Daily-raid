@@ -1,3 +1,5 @@
+--I'm not sure if delaying end of the mission by a couple of seconds
+--is even necessary...
 local original = RaidJobManager.external_end_mission
 
 function RaidJobManager:external_end_mission(restart_camp, is_failed)
@@ -27,6 +29,8 @@ function RaidJobManager:_delayed_end()
 	original(Global.RaidJobManager, Global.restart_camp, false)
 end
 
+--Not very clean way to do this
+--Making it so restart doesn't remove daily card
 function RaidJobManager:on_mission_restart()
 	managers.greed:on_level_exited(false)
 	managers.consumable_missions:on_level_exited(false)
@@ -39,6 +43,7 @@ function RaidJobManager:on_mission_restart()
 	end
 end
 
+--After restart card gets removed from peers, so we have to apply it again
 Hooks:PostHook(RaidJobManager, "on_mission_started", "daily_raid_sync_card_on_start", function(self)
 	if Network:is_server() and managers.challenge_cards.forced_card then
 		managers.network:session():send_to_peers_synched("sync_active_challenge_card", managers.challenge_cards.forced_card, true, "active")

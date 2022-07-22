@@ -1,9 +1,11 @@
+--Forcing card suggestion
 Hooks:PostHook(ReadyUpGui, "_layout_buttons", "daily_raid_ready_up_init", function(self)
 	if Network:is_server() and managers.challenge_cards.forced_card then
 		managers.challenge_cards:suggest_challenge_card(managers.challenge_cards.forced_card, 0)
 	end
 end)
 
+--Removing suggest card button
 Hooks:PostHook(ReadyUpGui, "_set_card_selection_controls", "daily_raid_set_card_selection_controls", function(self)
 	if Network:is_server() and managers.challenge_cards.forced_card then
 		self._suggest_card_button:hide()
@@ -11,6 +13,8 @@ Hooks:PostHook(ReadyUpGui, "_set_card_selection_controls", "daily_raid_set_card_
 	end
 end)
 
+--Not the cleanest way to do this(C)
+--Forces the game to skip "choose suggested card" screen
 function ReadyUpGui:update(t, dt)
 	self:_show_characters()
 	self:_show_player_challenge_card_info()
@@ -61,6 +65,7 @@ function ReadyUpGui:update(t, dt)
 				end
 			end
 
+			--Skipping "choose suggested card" screen
 			if managers.challenge_cards.forced_card then
 				managers.challenge_cards:select_challenge_card(managers.network:session():local_peer():id())
 				immidiate_start = true

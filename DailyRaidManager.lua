@@ -1,8 +1,10 @@
 if not DailyRaidManager then
     DailyRaidManager = {}
 
+    --Used for saving last finished daily
     DailyRaidManager.currentMod = CurrentMod
 
+    --Gold rewards for each raid and card rarity
     DailyRaidManager.rewards = {
         ["flakturm"] = 20,
         ["gold_rush"] = 20,
@@ -23,14 +25,18 @@ if not DailyRaidManager then
         ["default"] = 15
     }
 
+    --Seed for random raid and card is current date at UTC+0
+    --converted to number. i.e. 20220722
     function DailyRaidManager:seed_today()
         return tonumber(os.date('!%Y%m%d', os.time()))
     end
 
+    --Checks if current date is not the same as the one saved
     function DailyRaidManager:can_do_new_daily()
         return self.currentMod.Options:GetValue("last_finished") ~= self:seed_today()
     end
 
+    --Saves finished seed to the save file
     function DailyRaidManager:job_finished(seed)
         self.currentMod.Options:SetValue("last_finished", seed)
 		self.currentMod.Options:Save()

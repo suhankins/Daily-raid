@@ -1,3 +1,4 @@
+--Displays that cool shiny text "REWARD: X gold bars"
 Hooks:PostHook(RaidGUIControlListItemRaids, "init", "daily_raid_reward_display", function(self, parent, params, data)
 	if self._data.daily then
 		self._difficulty_indicator:hide()
