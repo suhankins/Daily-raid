@@ -99,7 +99,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 
 	local width = 197
 	local height = 267
-	local card_y = 375
+	local card_y = 350
 	local card_details_params = {
 		name = "card_details",
 		visible = true,
@@ -371,6 +371,9 @@ function MissionSelectionGui:_check_difficulty_warning()
 			message = managers.localization:text("daily_daily_bounty_difficulty")
 		end
 
+		--Hiding card display if message appears, or else all the buttons will be on top of it
+		self._card_panel:animate(callback(self, self, "_animate_hide_card"))
+
 		self._difficulty_warning_panel:get_engine_panel():stop()
 		self._difficulty_warning_panel:get_engine_panel():animate(callback(self, self, "_animate_slide_in_difficulty_warning_message"), message)
 		self._raid_start_button:disable()
@@ -385,6 +388,10 @@ function MissionSelectionGui:_check_difficulty_warning()
 			self:_bind_operation_list_controller_inputs()
 		end
 	else
+		--Showing card again, in case it was hidden
+		if (self._daily) then
+			self._card_panel:animate(callback(self, self, "_animate_show_card"))
+		end
 		self._difficulty_warning_panel:get_engine_panel():stop()
 		self._difficulty_warning_panel:get_engine_panel():animate(callback(self, self, "_animate_slide_out_difficulty_warning_message"))
 		self._raid_start_button:enable()
