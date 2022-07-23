@@ -1,6 +1,8 @@
 --Daily Bounty icon
 DB:create_entry("texture", "ui/atlas/raid_bounty", ModPath .. "assets/bounty.dds")
 
+MissionSelectionGui.EFFECT_DESCRIPTION_MARGIN = 20
+
 --We add daily to the list of raids by intercepting real list
 --and adding daily to it
 local original_raid_list_data_source = MissionSelectionGui._raid_list_data_source
@@ -169,7 +171,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 	self._bonus_effect_label = self._card_panel:label({
 		w = 190,
 		name = "bonus_effect_label",
-		h = 64,
+		h = 72,
 		wrap = true,
 		align = "left",
 		vertical = "center",
@@ -194,7 +196,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 	self._malus_effect_label = self._card_panel:label({
 		w = 190,
 		name = "malus_effect_label",
-		h = 64,
+		h = 72,
 		wrap = true,
 		align = "left",
 		vertical = "center",
@@ -294,6 +296,16 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 			self._card_name_label_right:set_text(self:translate(card_data.name))
 			self._bonus_effect_label:set_text(bonus_description)
 			self._malus_effect_label:set_text(malus_description)
+
+			--Effect text can be very long and we should be prepared for that
+			local _, _, w, h = self._bonus_effect_label:text_rect()
+			self._bonus_effect_label:set_h(h)
+			self._bonus_effect_icon:set_y(self._bonus_effect_label:y() + self._bonus_effect_label:h() / 2 - self._bonus_effect_icon:h() / 2)
+
+			_, _, w, h = self._malus_effect_label:text_rect()
+			self._malus_effect_label:set_h(h)
+			self._malus_effect_label:set_y(self._bonus_effect_label:y() + self._bonus_effect_label:h() + MissionSelectionGui.EFFECT_DESCRIPTION_MARGIN)
+			self._malus_effect_icon:set_y(self._malus_effect_label:y() + self._malus_effect_label:h() / 2 - self._malus_effect_icon:h() / 2)
 		else
 			--In single player we don't even create card display
 			if not Global.game_settings.single_player then
@@ -346,10 +358,8 @@ function MissionSelectionGui:_check_difficulty_warning()
 		self._difficulty_warning:animate(callback(self, self, "_animate_hide_difficulty_warning_message"))
 
 		return
-	elseif not self._selected_job_id or not managers.progression:mission_unlocked(tweak_data.operations.missions[self._selected_job_id].job_type, self._selected_job_id) then
-		if not self._daily then
-			return
-		end
+	elseif not self._selected_job_id or (not managers.progression:mission_unlocked(tweak_data.operations.missions[self._selected_job_id].job_type, self._selected_job_id) and not self._daily) then
+		return
 	end
 
 	local difficulty_available, difficulty_completed = 99, 0
@@ -412,6 +422,10 @@ Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", functi
 		managers.challenge_cards.forced_card = self._daily.challenge_card
 		managers.challenge_cards.daily_reward = self._daily.reward
 		managers.challenge_cards.daily_seed = self._daily.seed
+
+		DailyRaidManager:send_message("", {
+			GOLD_BARS = managers.challenge_cards.daily_reward
+		})
 	else
 		managers.challenge_cards.forced_card = nil
 		managers.challenge_cards.daily_reward = nil
