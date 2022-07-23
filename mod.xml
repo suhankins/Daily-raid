@@ -13,6 +13,8 @@
 
 		<hook source_file="lib/managers/raidjobmanager" file="raidjobmanager.lua"/>
 
+		<hook source_file="lib/managers/challengecardsmanager" file="challengecardsmanager.lua"/>
+
 		<hook source_file="lib/setups/setup" file="DailyRaidManager.lua"/>
     </hooks>
 	<localization directory="loc" default="english.json">

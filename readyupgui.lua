@@ -1,6 +1,10 @@
 --Forcing card suggestion
 Hooks:PostHook(ReadyUpGui, "_layout_buttons", "daily_raid_ready_up_init", function(self)
 	if Network:is_server() and managers.challenge_cards.forced_card then
+		local card_data = tweak_data.challenge_cards:get_card_by_key_name(managers.challenge_cards.forced_card)
+		DailyRaidManager:send_message("chat_message_forced_challenge_card_applied", {
+			CARD_NAME = managers.localization:text(card_data.name)
+		})
 		managers.challenge_cards:suggest_challenge_card(managers.challenge_cards.forced_card, 0)
 	end
 end)

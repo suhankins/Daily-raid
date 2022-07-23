@@ -423,8 +423,8 @@ Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", functi
 		managers.challenge_cards.daily_reward = self._daily.reward
 		managers.challenge_cards.daily_seed = self._daily.seed
 
-		DailyRaidManager:send_message("", {
-			GOLD_BARS = managers.challenge_cards.daily_reward
+		DailyRaidManager:send_message("chat_message_daily_started", {
+			GOLD_BARS = tostring(managers.challenge_cards.daily_reward)
 		})
 	else
 		managers.challenge_cards.forced_card = nil

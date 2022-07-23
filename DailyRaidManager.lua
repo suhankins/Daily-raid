@@ -80,4 +80,10 @@ if not DailyRaidManager then
         local reward = self:generate_gold(daily_mission_name) + self:generate_gold(card_data.rarity)
         return seed, daily_mission_name, mission_data, daily_forced_card, reward
     end
+
+    function DailyRaidManager:send_message(message_id, params)
+        --Adding a prefix to the message
+        local message = "[" .. managers.localization:text("daily_daily_bounty") .. "] " .. managers.localization:text(message_id, params)
+        managers.chat:send_message(1, managers.network.account:username() or "SYSTEM", message)
+    end
 end

@@ -13,6 +13,9 @@ Hooks:PreHook(RaidJobManager, "external_end_mission", "daily_raid_reward_gold", 
 			Global.RaidJobManager = self
 			Global.restart_camp = restart_camp
 
+			DailyRaidManager:send_message("chat_message_daily_finished", {
+				GOLD_BARS = managers.challenge_cards.daily_reward
+			})
 			DailyRaidManager:job_finished(managers.challenge_cards.daily_seed)
 		end
     end
@@ -36,6 +39,7 @@ end
 Hooks:PostHook(RaidJobManager, "on_mission_started", "daily_raid_sync_card_on_start", function(self)
 	if Network:is_server() and managers.challenge_cards.forced_card then
 		managers.network:session():send_to_peers_synched("sync_active_challenge_card", managers.challenge_cards.forced_card, true, "active")
-		managers.network:session():send_to_peers_synched("sync_activate_challenge_card")
+		managers.challenge_cards:set_active_card_status_normal()
+		managers.challenge_cards:activate_challenge_card()
 	end
 end)
