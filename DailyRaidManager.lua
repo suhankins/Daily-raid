@@ -66,13 +66,11 @@ if not DailyRaidManager then
 	    	mission_data = tweak_data.operations:mission_data(daily_mission_name)
 	    until not mission_data.consumable
 
-	    --Re-seeding RNG, because sometimes it does sus things
-	    math.randomseed(seed)
 	    --Generating random card
 	    local cards_index = tweak_data.challenge_cards.cards_index
 	    local daily_forced_card
 	    local card_data
-	    --Weekly Operations(C) are not implemented yet, so no operation cards for normal raids
+	    --Boost cards (i.e. more hp) don't really fit with the whole idea of daily raid
 	    repeat
 	    	daily_forced_card = cards_index[math.random(#cards_index)]
 	    	card_data = tweak_data.challenge_cards:get_card_by_key_name(daily_forced_card)
