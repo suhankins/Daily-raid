@@ -153,21 +153,10 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 	self._card_name_label_right = self._card_panel:label(params_card_name_right)
 
 	local bonus_y = card_y + 80
-	local malus_y = bonus_y + 75
 
 	local desc_x = text_info_pos + 65
 
 	--Positive effect display
-	self._bonus_effect_icon = self._card_panel:image({
-		name = "bonus_effect_icon",
-		h = 64,
-		w = 64,
-		visible = true,
-		x = text_info_pos,
-		y = bonus_y,
-		texture = tweak_data.gui.icons.ico_bonus.texture,
-		texture_rect = tweak_data.gui.icons.ico_bonus.texture_rect
-	})
 	self._bonus_effect_label = self._card_panel:label({
 		w = 190,
 		name = "bonus_effect_label",
@@ -182,6 +171,18 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		font_size = 16,
 		color = tweak_data.gui.colors.raid_grey
 	})
+	--Y Coordiantes for the rest of the things don't actually matter in any way
+	--They will be set later
+	self._bonus_effect_icon = self._card_panel:image({
+		name = "bonus_effect_icon",
+		h = 64,
+		w = 64,
+		visible = true,
+		x = text_info_pos,
+		texture = tweak_data.gui.icons.ico_bonus.texture,
+		texture_rect = tweak_data.gui.icons.ico_bonus.texture_rect
+	})
+	
 	--Negative effect display
 	self._malus_effect_icon = self._card_panel:image({
 		name = "malus_effect_icon",
@@ -189,7 +190,6 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		w = 64,
 		visible = true,
 		x = text_info_pos,
-		y = malus_y,
 		texture = tweak_data.gui.icons.ico_malus.texture,
 		texture_rect = tweak_data.gui.icons.ico_malus.texture_rect
 	})
@@ -202,7 +202,6 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		vertical = "center",
 		text = "So are you",
 		x = desc_x,
-		y = malus_y,
 		font = tweak_data.gui.fonts.lato,
 		font_size = 16,
 		color = tweak_data.gui.colors.raid_grey
