@@ -208,7 +208,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 	})
 end)
 
---Creates a card display
+--Creates a raid description
 Hooks:PostHook(MissionSelectionGui, "_layout_raid_description", "daily_raid_layout_description", function(self)
 	local daily_description_params = {
 		w = 432,
@@ -253,21 +253,18 @@ function MissionSelectionGui:_animate_change_primary_paper_control(control, mid_
 	self._active_primary_paper_control:set_visible(false)
 	self._daily_description:set_visible(false)
 
-	--Mid callback is ALWAYS set_text
 	if mid_callback then
 		mid_callback()
 	end
 
 	local _, _, w, h = self._mission_description:text_rect()
 	self._daily_description:set_y(self._mission_description:y() + h + 16)
-	if self._daily then
-		self._daily_description:set_visible(true)
-	end
 
 	self._active_primary_paper_control = new_active_control
 
 	self._active_primary_paper_control:set_visible(true)
-	if self.daily then
+	--Daily description should only be seen if selected thing has mission description
+	if self._daily and self._active_primary_paper_control == self._mission_description then
 		self._daily_description:set_visible(true)
 	end
 
@@ -287,6 +284,11 @@ function MissionSelectionGui:_animate_change_primary_paper_control(control, mid_
 	self._daily_description:set_alpha(1)
 end
 
+--Fixes an issue where operation is labeled as a daily raid
+Hooks:PostHook(MissionSelectionGui, "_select_operations_tab", "daily_raid_select_operations_tab", function(self)
+	self._daily = nil
+	self._card_panel:animate(callback(self, self, "_animate_hide_card"))
+end)
 
 --This isn't the cleanest way to do it, but so be it
 function MissionSelectionGui:_on_raid_clicked(raid_data)
