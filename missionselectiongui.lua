@@ -260,6 +260,7 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 			--Dailies have forced difficulty
 			self._difficulty_stepper:set_disabled_items({false, false, true, false})
 			self._difficulty_stepper:set_value_and_render("difficulty_3", true)
+			self:_check_difficulty_warning()
 		end
 
 		local raid_tweak_data = tweak_data.operations.missions[raid_data.value]
