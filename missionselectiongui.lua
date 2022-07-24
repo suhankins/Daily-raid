@@ -208,6 +208,86 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 	})
 end)
 
+--Creates a card display
+Hooks:PostHook(MissionSelectionGui, "_layout_raid_description", "daily_raid_layout_description", function(self)
+	local daily_description_params = {
+		w = 432,
+		name = "daily_descripton",
+		h = 528,
+		wrap = true,
+		text = self:translate("paper_daily_explanation"),
+		y = 136,
+		x = 38,
+		font = tweak_data.gui.fonts.lato,
+		font_size = tweak_data.gui.font_sizes.paragraph,
+		color = tweak_data.gui.colors.raid_dark_red,
+		layer = self._primary_paper_panel:layer() + 1
+	}
+	self._daily_description = self._primary_paper_panel:label(daily_description_params)
+
+	self._daily_description:set_visible(false)
+end)
+
+--Animating daily description
+function MissionSelectionGui:_animate_change_primary_paper_control(control, mid_callback, new_active_control)
+	local fade_out_duration = 0.2
+	local t = nil
+
+	if self._active_primary_paper_control then
+		t = (1 - self._active_primary_paper_control:alpha()) * fade_out_duration
+	else
+		t = 0
+	end
+
+	while fade_out_duration > t do
+		local dt = coroutine.yield()
+		t = t + dt
+		local alpha = Easing.cubic_in_out(t, 1, -1, fade_out_duration)
+
+		self._active_primary_paper_control:set_alpha(alpha)
+		self._daily_description:set_alpha(alpha)
+	end
+
+	self._active_primary_paper_control:set_alpha(0)
+	self._daily_description:set_alpha(0)
+	self._active_primary_paper_control:set_visible(false)
+	self._daily_description:set_visible(false)
+
+	--Mid callback is ALWAYS set_text
+	if mid_callback then
+		mid_callback()
+	end
+
+	local _, _, w, h = self._mission_description:text_rect()
+	self._daily_description:set_y(self._mission_description:y() + h + 16)
+	if self._daily then
+		self._daily_description:set_visible(true)
+	end
+
+	self._active_primary_paper_control = new_active_control
+
+	self._active_primary_paper_control:set_visible(true)
+	if self.daily then
+		self._daily_description:set_visible(true)
+	end
+
+	local fade_in_duration = 0.25
+	t = self._active_primary_paper_control:alpha() * fade_out_duration
+
+	while fade_in_duration > t do
+		local dt = coroutine.yield()
+		t = t + dt
+		local alpha = Easing.cubic_in_out(t, 0, 1, fade_in_duration)
+
+		self._active_primary_paper_control:set_alpha(alpha)
+		self._daily_description:set_alpha(alpha)
+	end
+
+	self._active_primary_paper_control:set_alpha(1)
+	self._daily_description:set_alpha(1)
+end
+
+
 --This isn't the cleanest way to do it, but so be it
 function MissionSelectionGui:_on_raid_clicked(raid_data)
 	--If we clicked the same thing, no reason to change anything
