@@ -4,18 +4,21 @@
 		description="",
 		global_key="DailyRaid">
     <hooks>
+		<!--Setting up some helpful functions-->
+		<hook source_file="lib/setups/setup" file="DailyRaidManager.lua"/>
+		<!--Daily RAID UI-->
 		<hook source_file="lib/managers/menu/raid_menu/missionselectiongui" file="missionselectiongui.lua"/>
 		<hook source_file="lib/managers/menu/raid_menu/controls/raidguicontrollistitemraids" file="raidguicontrollistitemraids.lua"/>
-
+		<!--Forced daily card-->
 		<hook source_file="lib/managers/menu/raid_menu/readyupgui" file="readyupgui.lua"/>
-
+		<!--Don't say "challenge card will be removed" on restart-->
 		<hook source_file="lib/managers/menu/raid_menu/raidmenucallbackhandler" file="raidmenucallbackhandler.lua"/>
-
+		<!--Awarding gold and not removing card on restart-->
 		<hook source_file="lib/managers/raidjobmanager" file="raidjobmanager.lua"/>
-
+		<!--Display a message when card fails and also one utility function to re-active a card-->
 		<hook source_file="lib/managers/challengecardsmanager" file="challengecardsmanager.lua"/>
-
-		<hook source_file="lib/setups/setup" file="DailyRaidManager.lua"/>
+		<!--Sending explanation message to people who just dropped in-->
+		<hook source_file="lib/network/base/hostnetworksession" file="hostnetworksession.lua"/>
     </hooks>
 	<localization directory="loc" default="english.json">
 		<loc file="english.json" language="english"/>
