@@ -1,7 +1,7 @@
 <table name="Daily raid"
 		author="Punished Bernadetta"
 		color="Color('bf204b')"
-		description="",
+		description="Daily challenges that pay gold",
 		global_key="DailyRaid">
     <hooks>
 		<!--Setting up some helpful functions-->
