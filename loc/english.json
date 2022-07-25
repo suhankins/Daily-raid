@@ -9,5 +9,7 @@
     "chat_message_card_failed": "Forced Challenge Card has been failed, no gold will be awarded on mission end. Restart the mission if you wish to receive your reward.",
     "chat_message_daily_finished": "Congratulations! Everyone in the lobby was awarded $GOLD_BARS; gold bars (Ignore loot drop screen, it lies)",
     "chat_message_drop_in": "Daily Bounty is activated in this lobby. If you finish this raid without failing the challenge card, everyone will be awarded $GOLD_BARS; gold bars!",
-    "paper_daily_explanation": "This is a Daily Bounty. Finishing this raid without failing a forced challenge card will award you and your crew with a lot of gold bars.\n\n-You will have a Forced Challenge Card\n-Restarting a mission won't fail the Forced Challenge Card"
+    "paper_daily_explanation": "This is a Daily Bounty. Finishing this raid without failing a forced challenge card will award you and your crew with a lot of gold bars.\n\n-You will have a Forced Challenge Card\n-Restarting a mission won't fail the Forced Challenge Card",
+    "daily_time_until_next": "Next Daily Bounty will be available in:",
+    "daily_time_done": "Reopen the menu to see new Daily Bounty!"
 }

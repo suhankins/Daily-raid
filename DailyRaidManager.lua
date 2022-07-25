@@ -31,6 +31,29 @@ if not DailyRaidManager then
         return tonumber(os.date('!%Y%m%d', os.time()))
     end
 
+    --time until next daily raid, in seconds
+    function DailyRaidManager:time_until_next()
+        --PLEASE DON'T ASK HOW IT WORKS
+        --I HAVE NO IDEA MYSELF
+        --IT JUST DOES
+        local function get_timezone_offset(ts)
+            local utcdate   = os.date("!*t", ts)
+            local localdate = os.date("*t", ts)
+            localdate.isdst = false
+            return os.difftime(os.time(localdate), os.time(utcdate))
+        end
+        
+        local tomorrow = os.date("!*t", os.time() + 24 * 60 * 60)
+        local utcdate   = os.time({
+            year = tomorrow.year,
+            month = tomorrow.month,
+            day = tomorrow.day,
+            hour = 0})
+        local localdate = os.date("*t")
+        local result = os.difftime(utcdate, os.time(localdate) - get_timezone_offset())
+        return result
+    end
+
     --Checks if current date is not the same as the one saved
     function DailyRaidManager:can_do_new_daily()
         return self.currentMod.Options:GetValue("last_finished") ~= self:seed_today()

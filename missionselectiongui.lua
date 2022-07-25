@@ -11,7 +11,14 @@ function MissionSelectionGui:_raid_list_data_source()
 	--Intercepting the list
 	local raid_list = original_raid_list_data_source(self)
 
-	if Global.game_settings.single_player or not DailyRaidManager:can_do_new_daily() then
+	if Global.game_settings.single_player then
+		return raid_list
+	end
+
+	if not DailyRaidManager:can_do_new_daily() then
+		if managers.progression:mission_progression_completed() then
+			self:_layout_daily_timer()
+		end
 		return raid_list
 	end
 
@@ -513,4 +520,100 @@ Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", functi
 		managers.challenge_cards.daily_reward = nil
 		managers.challenge_cards.daily_seed = nil
 	end
+end)
+
+function MissionSelectionGui:_layout_daily_timer()
+	local progression_timer_panel_params = {
+		halign = "right",
+		name = "progression_timer_panel",
+		h = 64,
+		valign = "top"
+	}
+	self._progression_timer_panel = self._root_panel:panel(progression_timer_panel_params)
+	local progression_timer_icon_params = {
+		name = "progression_timer_icon",
+		valign = "center",
+		halign = "left",
+		texture = "ui/atlas/raid_bounty",
+		texture_rect = {
+			0,
+			0,
+			56,
+			56
+		},
+		color = tweak_data.gui.colors.raid_dirty_white
+	}
+	local progression_timer_icon = self._progression_timer_panel:bitmap(progression_timer_icon_params)
+
+	progression_timer_icon:set_center_y(self._progression_timer_panel:h() / 2)
+
+	local timer_title_params = {
+		name = "progression_timer_title",
+		vertical = "center",
+		h = 32,
+		halign = "left",
+		x = 64,
+		font = tweak_data.gui.fonts.din_compressed,
+		font_size = tweak_data.gui.font_sizes.small,
+		color = tweak_data.gui.colors.raid_dirty_white,
+		text = self:translate("daily_time_until_next", false)
+	}
+	local timer_title = self._progression_timer_panel:text(timer_title_params)
+
+	local timer_params = {
+		name = "timer",
+		vertical = "top",
+		x = 64,
+		h = 32,
+		text = "00:00:00",
+		horizontal = "left",
+		halign = "left",
+		font = tweak_data.gui.fonts.din_compressed,
+		font_size = tweak_data.gui.font_sizes.small,
+		color = tweak_data.gui.colors.raid_dirty_white
+	}
+	self._daily_timer = self._progression_timer_panel:text(timer_params)
+
+	self._daily_timer:set_bottom(self._progression_timer_panel:h())
+
+	local _, _, daily_w, _ = self._daily_timer:text_rect()
+
+	self:_update_daily_timer()
+
+	local _, _, w, _ = timer_title:text_rect()
+
+	timer_title:set_w(w)
+
+	self._progression_timer_panel:set_w(timer_title:w() + 32 + daily_w)
+	self._progression_timer_panel:set_right(self._root_panel:w())
+end
+
+function MissionSelectionGui:_update_daily_timer(finish)
+	local text
+	if not finish then
+		local remaining_time = math.floor(DailyRaidManager:time_until_next())
+		local hours = math.floor(remaining_time / 3600)
+		remaining_time = remaining_time - hours * 3600
+		local minutes = math.floor(remaining_time / 60)
+		remaining_time = remaining_time - minutes * 60
+		local seconds = math.round(remaining_time)
+		text = hours > 0 and string.format("%02d", hours) .. ":" or ""
+		text = text .. string.format("%02d", minutes) .. ":" .. string.format("%02d", seconds)
+	else
+		text = self:translate("daily_time_done", false)
+	end
+	self._daily_timer:set_text(text)
+	local _, _, w, _ = self._daily_timer:text_rect()
+
+	self._daily_timer:set_w(w)
+end
+
+Hooks:PostHook(MissionSelectionGui, "update", "daily_raid_time_until_next_daily", function(self, t, dt)
+	if managers.progression:mission_progression_completed() then
+		if not DailyRaidManager:can_do_new_daily() then
+			self:_update_daily_timer()
+		elseif self._progression_timer_panel then
+			self:_update_daily_timer(true)
+		end
+	end 
 end)
