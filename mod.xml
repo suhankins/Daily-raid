@@ -28,8 +28,8 @@
 			<option name="last_finished" type="number" default_value="0"/>
         </options>
     </options>
-	<!--<auto_updates
+	<auto_updates
         provider="modworkshop"
-        id=""
-		version="1.0"/>-->
+        id="38718"
+		version="1.0"/>
 </table>
