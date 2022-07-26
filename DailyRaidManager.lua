@@ -4,6 +4,9 @@ if not DailyRaidManager then
     --Used for saving last finished daily
     DailyRaidManager.currentMod = CurrentMod
 
+    --Greed item we should spawn when rewarding players
+    DailyRaidManager.greed_item = nil
+
     --Gold rewards for each raid and card rarity
     DailyRaidManager.rewards = {
         ["flakturm"] = 20,
@@ -101,7 +104,7 @@ if not DailyRaidManager then
 
         --Generating gold
         local reward = self:generate_gold(daily_mission_name) + self:generate_gold(card_data.rarity)
-        return seed, daily_mission_name, mission_data, daily_forced_card, reward
+        return seed, daily_mission_name, daily_forced_card, reward
     end
 
     function DailyRaidManager:send_message(message_id, params)

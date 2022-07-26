@@ -4,14 +4,11 @@ Hooks:PreHook(RaidJobManager, "external_end_mission", "daily_raid_reward_gold", 
 		if Network:is_server() and managers.challenge_cards.forced_card and managers.challenge_cards:get_active_card_status() ~= managers.challenge_cards.CARD_STATUS_FAILED then
 			--gold_awarded_in_mission counter only increases by 1 when we collect an item, so we gotta collect a lot of them
 			for i = 1,managers.challenge_cards.daily_reward,1 do
-				local greed_item = World:spawn_unit(Idstring("units/vanilla/pickups/pku_loot/pku_loot_desk_golden_inkwell/pku_loot_desk_golden_inkwell"), Vector3(0, 0, 0), Rotation(0, 0, 0))
+				local greed_item = World:spawn_unit(DailyRaidManager.greed_item, Vector3(0, 0, 0), Rotation(0, 0, 0))
 				local value = managers.greed:loot_needed_for_gold_bar()
 				managers.greed:pickup_greed_item(value, greed_item)
 				managers.network:session():send_to_peers("greed_item_picked_up", greed_item, value)
 			end
-
-			Global.RaidJobManager = self
-			Global.restart_camp = restart_camp
 
 			DailyRaidManager:send_message("chat_message_daily_finished", {
 				GOLD_BARS = managers.challenge_cards.daily_reward
