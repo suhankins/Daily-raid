@@ -66,6 +66,14 @@ if not DailyRaidManager then
     function DailyRaidManager:job_finished(seed)
         self.currentMod.Options:SetValue("last_finished", seed)
 		self.currentMod.Options:Save()
+        self:remove_daily()
+    end
+
+    --Remove everything related to dailies
+    function DailyRaidManager:remove_daily()
+        managers.challenge_cards.forced_card = nil
+		managers.challenge_cards.daily_reward = nil
+		managers.challenge_cards.daily_seed = nil
     end
 
     function DailyRaidManager:generate_gold(data)

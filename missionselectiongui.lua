@@ -516,9 +516,7 @@ Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", functi
 			GOLD_BARS = managers.challenge_cards.daily_reward
 		})
 	else
-		managers.challenge_cards.forced_card = nil
-		managers.challenge_cards.daily_reward = nil
-		managers.challenge_cards.daily_seed = nil
+		DailyRaidManager:remove_daily()
 	end
 end)
 
