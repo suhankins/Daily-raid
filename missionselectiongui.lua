@@ -609,10 +609,10 @@ function MissionSelectionGui:_update_daily_timer(finish)
 end
 
 Hooks:PostHook(MissionSelectionGui, "update", "daily_raid_time_until_next_daily", function(self, t, dt)
-	if managers.progression:mission_progression_completed() then
+	if managers.progression:mission_progression_completed() and self._progression_timer_panel then
 		if not DailyRaidManager:can_do_new_daily() then
 			self:_update_daily_timer()
-		elseif self._progression_timer_panel then
+		else
 			self:_update_daily_timer(true)
 		end
 	end 
