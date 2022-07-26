@@ -24,7 +24,7 @@ function MissionSelectionGui:_raid_list_data_source()
 
 	local seed, daily_mission_name, daily_forced_card, reward = DailyRaidManager:generate_daily()
 
-	daily_mission_name = "tnd"
+	local item_text = self:translate(tweak_data.operations:mission_data(daily_mission_name).name_id)
 
 	local item_icon = {
 		texture = "ui/atlas/raid_bounty",
