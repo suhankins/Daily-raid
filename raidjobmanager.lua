@@ -6,13 +6,13 @@ Hooks:PreHook(RaidJobManager, "external_end_mission", "daily_raid_reward_gold", 
 		elseif managers.challenge_cards.forced_card then
 			if managers.challenge_cards:get_active_card_status() ~= managers.challenge_cards.CARD_STATUS_FAILED then
 				--gold_awarded_in_mission counter only increases by 1 when we collect an item, so we gotta collect a lot of them
+				local greed_item = World:spawn_unit(DailyRaidManager.greed_item, Vector3(0, 0, 0), Rotation(0, 0, 0))
+				local value = managers.greed:loot_needed_for_gold_bar()
 				for i = 1,managers.challenge_cards.daily_reward,1 do
-					local greed_item = World:spawn_unit(DailyRaidManager.greed_item, Vector3(0, 0, 0), Rotation(0, 0, 0))
-					local value = managers.greed:loot_needed_for_gold_bar()
 					managers.greed:pickup_greed_item(value, greed_item)
 					managers.network:session():send_to_peers("greed_item_picked_up", greed_item, value)
-					World:delete_unit(greed_item)
 				end
+				World:delete_unit(greed_item)
 
 				DailyRaidManager:send_message("chat_message_daily_finished", {
 					GOLD_BARS = managers.challenge_cards.daily_reward
