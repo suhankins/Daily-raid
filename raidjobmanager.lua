@@ -11,6 +11,7 @@ Hooks:PreHook(RaidJobManager, "external_end_mission", "daily_raid_reward_gold", 
 					local value = managers.greed:loot_needed_for_gold_bar()
 					managers.greed:pickup_greed_item(value, greed_item)
 					managers.network:session():send_to_peers("greed_item_picked_up", greed_item, value)
+					World:delete_unit(greed_item)
 				end
 
 				DailyRaidManager:send_message("chat_message_daily_finished", {
