@@ -294,7 +294,9 @@ end
 --Fixes an issue where operation is labeled as a daily raid
 Hooks:PostHook(MissionSelectionGui, "_select_operations_tab", "daily_raid_select_operations_tab", function(self)
 	self._daily = nil
-	self._card_panel:animate(callback(self, self, "_animate_hide_card"))
+	if not Global.game_settings.single_player then
+		self._card_panel:animate(callback(self, self, "_animate_hide_card"))
+	end
 end)
 
 --This isn't the cleanest way to do it, but so be it
