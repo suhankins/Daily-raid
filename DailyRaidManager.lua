@@ -7,6 +7,9 @@ if not DailyRaidManager then
     --Greed item we should spawn when rewarding players
     DailyRaidManager.greed_item = nil
 
+    --Just for convinience, so i can change it later if i wanna
+    DailyRaidManager.required_difficulty = 3
+
     --Gold rewards for each raid and card rarity
     DailyRaidManager.rewards = {
         ["flakturm"] = 20,

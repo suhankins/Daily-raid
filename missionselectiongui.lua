@@ -346,9 +346,19 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 
 			self:set_difficulty_stepper_data(difficulty_available, difficulty_completed)
 		else
-			--Dailies have forced difficulty
-			self._difficulty_stepper:set_disabled_items({false, false, true, false})
-			self._difficulty_stepper:set_value_and_render("difficulty_3", true)
+			--Disabling difficulties lower than allowed
+			local difficulties = {false, false, false, false}
+			for i=1,#difficulties,1 do
+				if i >= DailyRaidManager.required_difficulty then
+					difficulties[i] = true
+				end
+			end
+			self._difficulty_stepper:set_disabled_items(difficulties)
+			--If stepper is too low, setting it to lowest allowed difficulty
+			local difficulty = tweak_data:difficulty_to_index(self._difficulty_stepper:get_value())
+			if difficulty < DailyRaidManager.required_difficulty then
+				self._difficulty_stepper:set_value_and_render("difficulty_" .. DailyRaidManager.required_difficulty, true)
+			end
 			self:_check_difficulty_warning()
 		end
 
@@ -459,7 +469,7 @@ function MissionSelectionGui:_check_difficulty_warning()
 		difficulty_available, difficulty_completed = managers.progression:get_mission_progression(tweak_data.operations.missions[self._selected_job_id].job_type, self._selected_job_id)
 	end
 
-	if (difficulty_available < difficulty) or (self._daily and difficulty ~= 3) then
+	if (difficulty_available < difficulty) or (self._daily and difficulty < DailyRaidManager.required_difficulty) then
 		local message = ""
 		if difficulty_available < difficulty then
 			message = managers.localization:text("raid_difficulty_warning", {
@@ -467,7 +477,9 @@ function MissionSelectionGui:_check_difficulty_warning()
 				NEEDED_DIFFICULTY = managers.localization:text("menu_difficulty_" .. tostring(difficulty - 1))
 			})
 		else
-			message = managers.localization:text("daily_daily_bounty_difficulty")
+			message = managers.localization:text("daily_daily_bounty_difficulty", {
+				NEEDED_DIFFICULTY = managers.localization:text("menu_difficulty_" .. tostring(DailyRaidManager.required_difficulty))
+			})
 		end
 
 		--Hiding card display if message appears, or else all the buttons will be on top of it
