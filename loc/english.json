@@ -3,7 +3,7 @@
     "daily_daily_bounty": "DAILY BOUNTY",
     "daily_forced_challenge_card": "Forced Challenge Card",
     "daily_daily_bounty_difficulty": "Daily Bounty can only be collected on $NEEDED_DIFFICULTY; or higher difficulty",
-    "dialog_mp_restart_mission_no_card_host_message": "Are you sure you want to restart the mission?",
+    "dialog_mp_restart_mission_no_card_host_message": "Are you sure you want to restart the mission?\nRestarting the mission won't fail the Forced Challenge Card.",
     "chat_message_daily_started": "Host started a Daily Bounty. Finishing this Raid without failing a challenge card will give everyone $GOLD_BARS; gold bars!",
     "chat_message_forced_challenge_card_applied": "Forced Challenge Card '$CARD_NAME;' has been applied. Other suggestions will be ignored.",
     "chat_message_card_failed": "Forced Challenge Card has been failed, no gold will be awarded on mission end. Restart the mission if you wish to receive your reward.",
