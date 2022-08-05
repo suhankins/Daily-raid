@@ -405,7 +405,11 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 
 			_, _, w, h = self._malus_effect_label:text_rect()
 			self._malus_effect_label:set_h(h)
-			self._malus_effect_label:set_y(self._bonus_effect_label:y() + self._bonus_effect_label:h() + MissionSelectionGui.EFFECT_DESCRIPTION_MARGIN)
+			if (self._bonus_effect_label:h() > self._bonus_effect_icon:h()) then
+				self._malus_effect_label:set_y(self._bonus_effect_label:y() + self._bonus_effect_label:h() + MissionSelectionGui.EFFECT_DESCRIPTION_MARGIN)
+			else
+				self._malus_effect_label:set_y(self._bonus_effect_icon:y() + self._bonus_effect_icon:h() + MissionSelectionGui.EFFECT_DESCRIPTION_MARGIN)
+			end
 			self._malus_effect_icon:set_y(self._malus_effect_label:y() + self._malus_effect_label:h() / 2 - self._malus_effect_icon:h() / 2)
 		else
 			--In single player we don't even create card display
