@@ -79,7 +79,21 @@ if not DailyRaidManager then
 	    math.randomseed(seed)
 
 	    --Generating random mission
-	    local index = tweak_data.operations:get_raids_index()
+	    local index = {
+            "flakturm",
+            "gold_rush",
+            "train_yard",
+            "radio_defense",
+            "ger_bridge",
+            "settlement",
+            "bunker_test",
+            "tnd",
+            "hunters",
+            "convoy",
+            "spies_test",
+            "silo",
+            "kelly"
+        }
 	    local daily_mission_name
 	    local mission_data
 	    --Consumable dailies crash the game
