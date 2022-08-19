@@ -32,9 +32,9 @@ if not DailyRaidManager then
     }
 
     --Seed for random raid and card is current date at UTC+0
-    --converted to number. i.e. 20220722
+    --converted to number. i.e. 22072022 (dd,mm,yyyy)
     function DailyRaidManager:seed_today()
-        return tonumber(os.date('!%Y%m%d', os.time()))
+        return math.floor(tonumber(os.date('!%d%m%Y', os.time())) * 20170926 / 201407)
     end
 
     --time until next daily raid, in seconds
@@ -86,11 +86,13 @@ if not DailyRaidManager then
             "radio_defense",
             "ger_bridge",
             "settlement",
+            "forest_gumpy",
             "bunker_test",
             "tnd",
             "hunters",
             "convoy",
             "spies_test",
+            "sto",
             "silo",
             "kelly"
         }
