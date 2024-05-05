@@ -96,13 +96,8 @@ if not DailyRaidManager then
             "silo",
             "kelly"
         }
-	    local daily_mission_name
-	    local mission_data
-	    --Consumable dailies crash the game
-	    repeat
-	    	daily_mission_name = index[math.random(#index)]
-	    	mission_data = tweak_data.operations:mission_data(daily_mission_name)
-	    until not mission_data.consumable
+	    local daily_mission_name = index[math.random(#index)]
+	    local mission_data = tweak_data.operations:mission_data(daily_mission_name)
 
 	    --Generating random card
 	    local cards_index = tweak_data.challenge_cards.cards_index
