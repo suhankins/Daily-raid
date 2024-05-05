@@ -327,7 +327,7 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 	local job_tweak_data = tweak_data.operations.missions[self._selected_job_id]
 
 	--This line is very long, but it boils down to
-	--"If mission is not unlock but needs to be unlocked to be played, display locked screen"
+	--"If mission is not unlocked but needs to be unlocked to be played, display locked screen"
 	if not managers.progression:mission_unlocked(job_tweak_data.job_type, self._selected_job_id) and not job_tweak_data.consumable and not job_tweak_data.debug and not raid_data.daily then
 		if Network:is_server() then
 			self._start_disabled_message:set_text(self:translate("raid_locked_progression", true))

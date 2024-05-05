@@ -5,6 +5,8 @@ if not DailyRaidManager then
     DailyRaidManager.currentMod = CurrentMod
 
     --Greed item we should spawn when rewarding players
+    --Set in greedmanager.lua when game tries to spawn greed objects.
+    --This way we will only spawn greed objects that are already loaded.
     DailyRaidManager.greed_item = nil
 
     --Just for convinience, so i can change it later if i wanna
