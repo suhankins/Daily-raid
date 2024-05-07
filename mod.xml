@@ -1,5 +1,5 @@
 <table name="Daily raid"
-		author="Punished Bernadetta"
+		author="Punished Bernadetta & BangL"
 		color="Color('bf204b')"
 		description="Daily challenges that pay gold",
 		global_key="DailyRaid">
@@ -33,5 +33,5 @@
 	<auto_updates
         provider="modworkshop"
         id="38718"
-		version="1.13"/>
+		version="1.14"/>
 </table>
