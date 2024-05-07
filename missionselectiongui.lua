@@ -230,18 +230,39 @@ Hooks:PostHook(MissionSelectionGui, "_layout_raid_description", "daily_raid_layo
 		color = tweak_data.gui.colors.raid_dark_red,
 		layer = self._primary_paper_panel:layer() + 1
 	}
-	self._daily_description = self._primary_paper_panel:label(daily_description_params)
+	self._daily_description = self._primary_paper_panel:text(daily_description_params)
 
 	self._daily_description:set_visible(false)
 end)
 
 --Animating daily description
-function MissionSelectionGui:_animate_change_primary_paper_control(control, mid_callback, new_active_control)
+local _animate_change_primary_paper_control_original = MissionSelectionGui._animate_change_primary_paper_control
+function MissionSelectionGui:_animate_change_primary_paper_control(control, mid_callback, new_active_control, ...)
+	-- always start own fade out animation first (async)
+	self._daily_description:stop()
+	self._daily_description:animate(callback(self, self, "_animate_daily_description_fade_out"))
+
+	-- post hook mid_callback
+	local mid_callback_post_hook = function(...)
+		mid_callback(...)
+
+		-- start own fade in, only if description page of daily is selected
+		if self._daily and new_active_control == self._mission_description then -- must be after/post the mid_callback
+			self._daily_description:stop()
+			self._daily_description:animate(callback(self, self, "_animate_daily_description_fade_in"))
+		end
+	end
+
+	-- start original animation (sync)
+	_animate_change_primary_paper_control_original(self, control, mid_callback_post_hook, new_active_control, ...)
+end
+
+function MissionSelectionGui:_animate_daily_description_fade_out(daily_description)
 	local fade_out_duration = 0.2
 	local t = nil
 
-	if self._active_primary_paper_control then
-		t = (1 - self._active_primary_paper_control:alpha()) * fade_out_duration
+	if daily_description:visible() and daily_description:alpha() > 0 then
+		t = (1 - daily_description:alpha()) * fade_out_duration
 	else
 		t = 0
 	end
@@ -249,46 +270,27 @@ function MissionSelectionGui:_animate_change_primary_paper_control(control, mid_
 	while fade_out_duration > t do
 		local dt = coroutine.yield()
 		t = t + dt
-		local alpha = Easing.cubic_in_out(t, 1, -1, fade_out_duration)
-
-		self._active_primary_paper_control:set_alpha(alpha)
-		self._daily_description:set_alpha(alpha)
+		daily_description:set_alpha(Easing.cubic_in_out(t, 1, -1, fade_out_duration))
 	end
+	daily_description:set_alpha(0)
+	daily_description:set_visible(false)
+end
 
-	self._active_primary_paper_control:set_alpha(0)
-	self._daily_description:set_alpha(0)
-	self._active_primary_paper_control:set_visible(false)
-	self._daily_description:set_visible(false)
+function MissionSelectionGui:_animate_daily_description_fade_in(daily_description)
+	local fade_in_duration = 0.2
+	local t = nil
 
-	if mid_callback then
-		mid_callback()
-	end
+	local _, _, _, h = self._mission_description:text_rect() -- must also be after the mid_callback
+	daily_description:set_y(self._mission_description:y() + h + 16)
+	daily_description:set_visible(true)
 
-	local _, _, w, h = self._mission_description:text_rect()
-	self._daily_description:set_y(self._mission_description:y() + h + 16)
-
-	self._active_primary_paper_control = new_active_control
-
-	self._active_primary_paper_control:set_visible(true)
-	--Daily description should only be seen if selected thing has mission description
-	if self._daily and self._active_primary_paper_control == self._mission_description then
-		self._daily_description:set_visible(true)
-	end
-
-	local fade_in_duration = 0.25
-	t = self._active_primary_paper_control:alpha() * fade_out_duration
-
+	t = daily_description:alpha() * fade_in_duration
 	while fade_in_duration > t do
 		local dt = coroutine.yield()
 		t = t + dt
-		local alpha = Easing.cubic_in_out(t, 0, 1, fade_in_duration)
-
-		self._active_primary_paper_control:set_alpha(alpha)
-		self._daily_description:set_alpha(alpha)
+		daily_description:set_alpha(Easing.cubic_in_out(t, 0, 1, fade_in_duration))
 	end
-
-	self._active_primary_paper_control:set_alpha(1)
-	self._daily_description:set_alpha(1)
+	daily_description:set_alpha(1)
 end
 
 --Fixes an issue where operation is labeled as a daily raid
