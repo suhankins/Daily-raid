@@ -1,0 +1,15 @@
+1.14 - By BangL: Removed function overwrites for better compatibility with future updates and other mods
+1.13 - Changed the way seed is generated to make generated raids more random
+1.12 - Hardcoded raid index so custom missions don't mess it up
+1.11 - Fixed a crash that happened when user started a daily, returned to camp and started daily again
+1.10 - Fixed a bug where effect descriptions were a bit too close to each other
+1.9 - Fixed a bug where card effect was always applied; Made restart description a bit better
+1.8 - Fixed a crash when selection operations tab offline
+1.7 - Instead of spawning X number of greed items, now we spawn 1 and pick it up X times
+1.6 - Greed items now despawn
+1.5 - Daily Bounty can now be collected on Very Hard.
+1.4 - Tried fixing an issue where daily challenge card is still applied after doing another mission after daily
+1.3 - Fixed a crash accidentally added when removing some unused code
+1.2 - Mod now dynamicly decides which greed item to spawn, fixing crashes on Wiretap
+1.1 - Fixed game crashing offline if daily bounty was already completed
+1.0 - Initial release
