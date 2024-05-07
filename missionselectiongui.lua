@@ -301,24 +301,35 @@ Hooks:PostHook(MissionSelectionGui, "_select_operations_tab", "daily_raid_select
 	end
 end)
 
---This isn't the cleanest way to do it, but so be it
-function MissionSelectionGui:_on_raid_clicked(raid_data)
-	--If we clicked the same thing, no reason to change anything
-	if raid_data.daily ~= self._daily or self._selected_job_id ~= raid_data.value then
-		self:_stop_mission_briefing_audio()
-	else
+local _on_raid_clicked_original = MissionSelectionGui._on_raid_clicked
+function MissionSelectionGui:_on_raid_clicked(raid_data, ...)
+
+	if not raid_data.daily then -- non-daily is selected now
+		if self._daily then -- reset daily selection
+			self._daily = nil
+			self._selected_job_id = nil -- forces original func to recognize as changed, if same raid (normal/nondaily) is selected 
+		end
+		_on_raid_clicked_original(self, raid_data, ...)
+		self:_check_difficulty_warning() -- hide warning, in case daily was selected before, and warning was shown
+		if self._card_panel then
+			self._card_panel:animate(callback(self, self, "_animate_hide_card")) --Hide card
+		end
+
 		return
+	elseif raid_data.daily == self._daily then -- same daily is selected
+		return -- do nothing
 	end
+
+	--- daily newly selected ---
 
 	--Saving daily data
 	self._daily = raid_data.daily
 
-	local difficulty_available = managers.progression:get_mission_progression(tweak_data.operations.missions[raid_data.value].job_type, raid_data.value)
-
-	if difficulty_available and difficulty_available < tweak_data:difficulty_to_index(self._difficulty_stepper:get_value()) then
-		self._difficulty_stepper:set_value_and_render(tweak_data:index_to_difficulty(difficulty_available), true)
-		self:_check_difficulty_warning()
-	end
+	-- FIXME?
+	-- everything below here (in this func)
+	-- is mostly a clone of the original func
+	-- might need update if game update adds smth
+	-- current state fits: U21.6
 
 	self._operation_tutorialization_panel:get_engine_panel():stop()
 	self._operation_tutorialization_panel:get_engine_panel():animate(callback(self, self, "_animate_hide_operation_tutorialization"))
@@ -326,131 +337,88 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 	self._selected_job_id = raid_data.value
 	self._selected_new_operation_index = nil
 
-	local job_tweak_data = tweak_data.operations.missions[self._selected_job_id]
+	if Network:is_server() then
+		self._start_disabled_message:set_visible(false)
+		self._raid_start_button:set_visible(true)
+	end
 
-	--This line is very long, but it boils down to
-	--"If mission is not unlocked but needs to be unlocked to be played, display locked screen"
-	if not managers.progression:mission_unlocked(job_tweak_data.job_type, self._selected_job_id) and not job_tweak_data.consumable and not job_tweak_data.debug and not raid_data.daily then
-		if Network:is_server() then
-			self._start_disabled_message:set_text(self:translate("raid_locked_progression", true))
-			self._start_disabled_message:set_visible(true)
-			self._raid_start_button:set_visible(false)
+	--Disabling difficulties lower than allowed
+	local difficulties = { false, false, false, false }
+	for i = 1, #difficulties, 1 do
+		if i >= DailyRaidManager.required_difficulty then
+			difficulties[i] = true
 		end
+	end
+	self._difficulty_stepper:set_disabled_items(difficulties)
+	--If stepper is too low, setting it to lowest allowed difficulty
+	local difficulty = tweak_data:difficulty_to_index(self._difficulty_stepper:get_value())
+	if difficulty < DailyRaidManager.required_difficulty then
+		self._difficulty_stepper:set_value_and_render("difficulty_" .. DailyRaidManager.required_difficulty, true)
+	end
+	self:_check_difficulty_warning()
 
-		self:_on_locked_raid_clicked()
+	local raid_tweak_data = tweak_data.operations.missions[raid_data.value]
+
+	self._primary_paper_mission_icon:set_image(tweak_data.gui.icons[raid_tweak_data.icon_menu].texture)
+	self._primary_paper_mission_icon:set_texture_rect(unpack(tweak_data.gui.icons[raid_tweak_data.icon_menu].texture_rect))
+	self._primary_paper_mission_icon:set_w(tweak_data.gui:icon_w(raid_tweak_data.icon_menu))
+	self._primary_paper_mission_icon:set_h(tweak_data.gui:icon_h(raid_tweak_data.icon_menu))
+	self._primary_paper_title:set_text(self:translate(raid_tweak_data.name_id, true))
+
+	self._primary_paper_subtitle:set_visible(true)
+	self._primary_paper_subtitle:set_text(self:translate("daily_daily_bounty", true))
+	self._primary_paper_difficulty_indicator:set_visible(false)
+
+	--Showing card
+	self._card_panel:animate(callback(self, self, "_animate_show_card"))
+
+	local card_data = tweak_data.challenge_cards:get_card_by_key_name(raid_data.daily.challenge_card)
+	local bonus_description, malus_description = managers.challenge_cards:get_card_description(raid_data.daily.challenge_card)
+
+	self._card_details:set_card(raid_data.daily.challenge_card)
+	self._card_name_label_right:set_text(self:translate(card_data.name))
+	self._bonus_effect_label:set_text(bonus_description)
+	self._malus_effect_label:set_text(malus_description)
+
+	--Effect text can be very long and we should be prepared for that
+	local _, _, _, h = self._bonus_effect_label:text_rect()
+	self._bonus_effect_label:set_h(h)
+	self._bonus_effect_icon:set_y(self._bonus_effect_label:y() + self._bonus_effect_label:h() / 2 - self._bonus_effect_icon:h() / 2)
+
+	_, _, _, h = self._malus_effect_label:text_rect()
+	self._malus_effect_label:set_h(h)
+	if (self._bonus_effect_label:h() > self._bonus_effect_icon:h()) then
+		self._malus_effect_label:set_y(self._bonus_effect_label:y() + self._bonus_effect_label:h() + MissionSelectionGui.EFFECT_DESCRIPTION_MARGIN)
 	else
-		if Network:is_server() then
-			self._start_disabled_message:set_visible(false)
-			self._raid_start_button:set_visible(true)
-		end
+		self._malus_effect_label:set_y(self._bonus_effect_icon:y() + self._bonus_effect_icon:h() + MissionSelectionGui.EFFECT_DESCRIPTION_MARGIN)
+	end
+	self._malus_effect_icon:set_y(self._malus_effect_label:y() + self._malus_effect_label:h() / 2 - self._malus_effect_icon:h() / 2)
 
-		local difficulty_available, difficulty_completed = 0, 0
-		if not raid_data.daily then
-			difficulty_available, difficulty_completed = managers.progression:get_mission_progression(OperationsTweakData.JOB_TYPE_RAID, self._selected_job_id)
+	local stamp_texture = tweak_data.gui.icons[MissionSelectionGui.PAPER_STAMP_ICON]
 
-			self:set_difficulty_stepper_data(difficulty_available, difficulty_completed)
-		else
-			--Disabling difficulties lower than allowed
-			local difficulties = {false, false, false, false}
-			for i=1,#difficulties,1 do
-				if i >= DailyRaidManager.required_difficulty then
-					difficulties[i] = true
-				end
-			end
-			self._difficulty_stepper:set_disabled_items(difficulties)
-			--If stepper is too low, setting it to lowest allowed difficulty
-			local difficulty = tweak_data:difficulty_to_index(self._difficulty_stepper:get_value())
-			if difficulty < DailyRaidManager.required_difficulty then
-				self._difficulty_stepper:set_value_and_render("difficulty_" .. DailyRaidManager.required_difficulty, true)
-			end
-			self:_check_difficulty_warning()
-		end
+	if raid_tweak_data.consumable then
+		stamp_texture = tweak_data.gui.icons[MissionSelectionGui.PAPER_STAMP_ICON_CONSUMABLE]
+	end
 
-		local raid_tweak_data = tweak_data.operations.missions[raid_data.value]
+	self._soe_emblem:set_image(stamp_texture.texture)
+	self._soe_emblem:set_texture_rect(unpack(stamp_texture.texture_rect))
+	self._info_button:set_active(true)
+	self._intel_button:set_active(false)
+	self._audio_button:set_active(false)
+	self._info_button:enable()
+	self._intel_button:enable()
+	self._audio_button:show()
+	self._audio_button:enable()
 
-		self._primary_paper_mission_icon:set_image(tweak_data.gui.icons[raid_tweak_data.icon_menu].texture)
-		self._primary_paper_mission_icon:set_texture_rect(unpack(tweak_data.gui.icons[raid_tweak_data.icon_menu].texture_rect))
-		self._primary_paper_mission_icon:set_w(tweak_data.gui:icon_w(raid_tweak_data.icon_menu))
-		self._primary_paper_mission_icon:set_h(tweak_data.gui:icon_h(raid_tweak_data.icon_menu))
-		self._primary_paper_title:set_text(self:translate(raid_tweak_data.name_id, true))
+	self:_on_info_clicked(nil, true)
+	self._intel_image_grid:clear_selection()
+	self:_stop_mission_briefing_audio()
 
-		if job_tweak_data.consumable then
-			self._primary_paper_subtitle:set_visible(true)
-			self._primary_paper_subtitle:set_text(self:translate("menu_mission_selected_mission_type_consumable", true))
-			self._primary_paper_difficulty_indicator:set_visible(false)
-		elseif raid_data.daily then
-			self._primary_paper_subtitle:set_visible(true)
-			self._primary_paper_subtitle:set_text(self:translate("daily_daily_bounty", true))
-			self._primary_paper_difficulty_indicator:set_visible(false)
-		elseif difficulty_available and difficulty_completed then
-			self._primary_paper_subtitle:set_visible(false)
-			self._primary_paper_difficulty_indicator:set_visible(true)
-			self._primary_paper_difficulty_indicator:set_progress(difficulty_available, difficulty_completed)
-		end
+	local short_audio_briefing_id = raid_tweak_data.short_audio_briefing_id
 
-		if raid_data.daily then
-			--Showing card
-			self._card_panel:animate(callback(self, self, "_animate_show_card"))
-
-			local card_data = tweak_data.challenge_cards:get_card_by_key_name(raid_data.daily.challenge_card)
-			local bonus_description, malus_description = managers.challenge_cards:get_card_description(raid_data.daily.challenge_card)
-
-			self._card_details:set_card(raid_data.daily.challenge_card)
-			self._card_name_label_right:set_text(self:translate(card_data.name))
-			self._bonus_effect_label:set_text(bonus_description)
-			self._malus_effect_label:set_text(malus_description)
-
-			--Effect text can be very long and we should be prepared for that
-			local _, _, w, h = self._bonus_effect_label:text_rect()
-			self._bonus_effect_label:set_h(h)
-			self._bonus_effect_icon:set_y(self._bonus_effect_label:y() + self._bonus_effect_label:h() / 2 - self._bonus_effect_icon:h() / 2)
-
-			_, _, w, h = self._malus_effect_label:text_rect()
-			self._malus_effect_label:set_h(h)
-			if (self._bonus_effect_label:h() > self._bonus_effect_icon:h()) then
-				self._malus_effect_label:set_y(self._bonus_effect_label:y() + self._bonus_effect_label:h() + MissionSelectionGui.EFFECT_DESCRIPTION_MARGIN)
-			else
-				self._malus_effect_label:set_y(self._bonus_effect_icon:y() + self._bonus_effect_icon:h() + MissionSelectionGui.EFFECT_DESCRIPTION_MARGIN)
-			end
-			self._malus_effect_icon:set_y(self._malus_effect_label:y() + self._malus_effect_label:h() / 2 - self._malus_effect_icon:h() / 2)
-		else
-			--In single player we don't even create card display
-			if not Global.game_settings.single_player then
-				--Hide card
-				self._card_panel:animate(callback(self, self, "_animate_hide_card"))
-			end
-		end
-
-		local stamp_texture = tweak_data.gui.icons[MissionSelectionGui.PAPER_STAMP_ICON]
-
-		if raid_tweak_data.consumable then
-			stamp_texture = tweak_data.gui.icons[MissionSelectionGui.PAPER_STAMP_ICON_CONSUMABLE]
-		end
-
-		self._soe_emblem:set_image(stamp_texture.texture)
-		self._soe_emblem:set_texture_rect(unpack(stamp_texture.texture_rect))
-		self._info_button:set_active(true)
-		self._intel_button:set_active(false)
-		self._audio_button:set_active(false)
-		self._info_button:enable()
-		self._intel_button:enable()
-
-		if raid_tweak_data.consumable then
-			self._audio_button:hide()
-		else
-			self._audio_button:show()
-			self._audio_button:enable()
-		end
-
-		self:_on_info_clicked(nil, true)
-		self._intel_image_grid:clear_selection()
-		self:_stop_mission_briefing_audio()
-
-		local short_audio_briefing_id = raid_tweak_data.short_audio_briefing_id
-
-		if short_audio_briefing_id then
-			managers.queued_tasks:queue("play_short_audio_briefing", self.play_short_audio_briefing, self, short_audio_briefing_id, 1, nil)
-		end
+	if short_audio_briefing_id then
+		managers.queued_tasks:queue("play_short_audio_briefing", self.play_short_audio_briefing, self,
+			short_audio_briefing_id, 1, nil)
 	end
 end
 
