@@ -18,7 +18,7 @@
 		<!--Display a message when card fails and also one utility function to re-active a card-->
 		<hook source_file="lib/managers/challengecardsmanager" file="challengecardsmanager.lua"/>
 		<!--Sending explanation message to people who just dropped in-->
-		<hook source_file="lib/network/base/hostnetworksession" file="hostnetworksession.lua"/>
+		<hook source_file="lib/managers/playermanager" file="playermanager.lua"/>
 		<!--Figuring out which greed item even exists-->
 		<hook source_file="lib/managers/greedmanager" file="greedmanager.lua"/>
     </hooks>
