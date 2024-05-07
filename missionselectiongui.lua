@@ -454,76 +454,43 @@ function MissionSelectionGui:_on_raid_clicked(raid_data)
 	end
 end
 
---Again, not the cleanest way to do this stuff
 --Displays warning when selecting locked difficulty
-function MissionSelectionGui:_check_difficulty_warning()
-	if self._selected_job_id and tweak_data.operations.missions[self._selected_job_id].consumable then
-		self._difficulty_warning_panel:get_engine_panel():stop()
-		self._difficulty_warning_panel:get_engine_panel():animate(callback(self, self, "_animate_slide_out_difficulty_warning_message"))
-		self._raid_start_button:enable()
-		self._difficulty_warning:stop()
-		self._difficulty_warning:animate(callback(self, self, "_animate_hide_difficulty_warning_message"))
-
-		return
-	elseif not self._selected_job_id or (not managers.progression:mission_unlocked(tweak_data.operations.missions[self._selected_job_id].job_type, self._selected_job_id) and not self._daily) then
-		return
-	end
-
-	local difficulty_available, difficulty_completed = 99, 0
-	local difficulty = tweak_data:difficulty_to_index(self._difficulty_stepper:get_value())
-
-	--Dailies don't need to known what difficulties are available
+Hooks:PostHook(MissionSelectionGui, "_check_difficulty_warning", "daily_raid_check_difficulty_warning", function(self)
 	if not self._daily then
-		difficulty_available, difficulty_completed = managers.progression:get_mission_progression(tweak_data.operations.missions[self._selected_job_id].job_type, self._selected_job_id)
+		return
 	end
 
-	if (difficulty_available < difficulty) or (self._daily and difficulty < DailyRaidManager.required_difficulty) then
-		local message = ""
-		if difficulty_available < difficulty then
-			message = managers.localization:text("raid_difficulty_warning", {
-				TARGET_DIFFICULTY = managers.localization:text("menu_difficulty_" .. tostring(difficulty)),
-				NEEDED_DIFFICULTY = managers.localization:text("menu_difficulty_" .. tostring(difficulty - 1))
-			})
-		else
-			message = managers.localization:text("daily_daily_bounty_difficulty", {
-				NEEDED_DIFFICULTY = managers.localization:text("menu_difficulty_" .. tostring(DailyRaidManager.required_difficulty))
-			})
-		end
+	if tweak_data:difficulty_to_index(self._difficulty_stepper:get_value()) < DailyRaidManager.required_difficulty then
+		local message = managers.localization:text("daily_daily_bounty_difficulty", {
+			NEEDED_DIFFICULTY = managers.localization:text("menu_difficulty_" ..
+				tostring(DailyRaidManager.required_difficulty))
+		})
 
 		--Hiding card display if message appears, or else all the buttons will be on top of it
 		self._card_panel:animate(callback(self, self, "_animate_hide_card"))
 
 		self._difficulty_warning_panel:get_engine_panel():stop()
-		self._difficulty_warning_panel:get_engine_panel():animate(callback(self, self, "_animate_slide_in_difficulty_warning_message"), message)
+		self._difficulty_warning_panel:get_engine_panel():animate(
+			callback(self, self, "_animate_slide_in_difficulty_warning_message"), message)
 		self._raid_start_button:disable()
 		self._difficulty_warning:stop()
 		self._difficulty_warning:animate(callback(self, self, "_animate_set_difficulty_warning_message"), message)
 
-		if self._current_mission_type == "raids" then
-			self:_bind_locked_raid_controller_inputs()
-		elseif self._current_mission_type == "operations" and self._current_display == MissionSelectionGui.DISPLAY_SECOND then
-			self:_bind_locked_operation_list_controller_inputs()
-		elseif self._current_mission_type == "operations" and self._current_display == MissionSelectionGui.DISPLAY_FIRST then
-			self:_bind_operation_list_controller_inputs()
-		end
+		self:_bind_locked_raid_controller_inputs()
 	else
 		--Showing card again, in case it was hidden
-		if (self._daily) then
-			self._card_panel:animate(callback(self, self, "_animate_show_card"))
-		end
+		self._card_panel:animate(callback(self, self, "_animate_show_card"))
+
 		self._difficulty_warning_panel:get_engine_panel():stop()
-		self._difficulty_warning_panel:get_engine_panel():animate(callback(self, self, "_animate_slide_out_difficulty_warning_message"))
+		self._difficulty_warning_panel:get_engine_panel():animate(callback(self, self,
+			"_animate_slide_out_difficulty_warning_message"))
 		self._raid_start_button:enable()
 		self._difficulty_warning:stop()
 		self._difficulty_warning:animate(callback(self, self, "_animate_hide_difficulty_warning_message"))
 
-		if self._current_mission_type == "raids" then
-			self:_bind_raid_controller_inputs()
-		elseif self._current_mission_type == "operations" then
-			self:_bind_operation_list_controller_inputs()
-		end
+		self:_bind_raid_controller_inputs()
 	end
-end
+end)
 
 Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", function(self, job_id)
 	if Network:is_server() and self._daily then
