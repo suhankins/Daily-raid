@@ -88,13 +88,13 @@ if not DailyRaidManager then
             "radio_defense",
             "ger_bridge",
             "settlement",
-            "forest_gumpy",
+            -- "forest_gumpy", Forest Convoy - outlaw raid
             "bunker_test",
             "tnd",
             "hunters",
             "convoy",
             "spies_test",
-            "sto",
+            -- "sto", Rogues Gallery - outlaw raid
             "silo",
             "kelly"
         }
