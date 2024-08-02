@@ -104,7 +104,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 	local card_panel_params = {
 		name = "card_panel"
 	}
-	self._card_panel = self._settings_panel:panel(card_panel_params)
+	self._card_panel = self._right_panel:panel(card_panel_params)
 
 	local width = 197
 	local height = 267
@@ -150,7 +150,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		w = 255,
 		align = "left",
 		vertical = "left",
-		text = "DON'T YOU DIE ON ME",
+		text = "CARD NAME PLACEHOLDER",
 		y = card_y + 30,
 		x = text_info_pos,
 		color = tweak_data.gui.colors.white,
@@ -171,7 +171,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		wrap = true,
 		align = "left",
 		vertical = "center",
-		text = "Your mother is gay",
+		text = "POSITIVE EFFECT PLACEHOLDER",
 		x = desc_x,
 		y = bonus_y,
 		font = tweak_data.gui.fonts.lato,
@@ -207,7 +207,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 		wrap = true,
 		align = "left",
 		vertical = "center",
-		text = "So are you",
+		text = "NEGATIVE EFFECT PLACEHOLDER",
 		x = desc_x,
 		font = tweak_data.gui.fonts.lato,
 		font_size = 16,
@@ -303,7 +303,6 @@ end)
 
 local _on_raid_clicked_original = MissionSelectionGui._on_raid_clicked
 function MissionSelectionGui:_on_raid_clicked(raid_data, ...)
-
 	if not raid_data.daily then -- non-daily is selected now
 		if self._daily then -- reset daily selection
 			self._daily = nil
@@ -549,7 +548,7 @@ function MissionSelectionGui:_update_daily_timer(finish)
 		remaining_time = remaining_time - hours * 3600
 		local minutes = math.floor(remaining_time / 60)
 		remaining_time = remaining_time - minutes * 60
-		local seconds = math.round(remaining_time)
+		local seconds = math.floor(remaining_time)
 		text = hours > 0 and string.format("%02d", hours) .. ":" or ""
 		text = text .. string.format("%02d", minutes) .. ":" .. string.format("%02d", seconds)
 	else
@@ -568,5 +567,5 @@ Hooks:PostHook(MissionSelectionGui, "update", "daily_raid_time_until_next_daily"
 		else
 			self:_update_daily_timer(true)
 		end
-	end 
+	end
 end)

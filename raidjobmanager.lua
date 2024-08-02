@@ -3,22 +3,28 @@ Hooks:PreHook(RaidJobManager, "external_end_mission", "daily_raid_reward_gold", 
 	if self._current_job and Network:is_server() then
 		if not is_failed and managers.challenge_cards.forced_card then
 			if managers.challenge_cards:get_active_card_status() ~= managers.challenge_cards.CARD_STATUS_FAILED then
-				--gold_awarded_in_mission counter only increases by 1 when we collect an item, so we gotta collect a lot of them
-				local greed_item = World:spawn_unit(DailyRaidManager.greed_item, Vector3(0, 0, 0), Rotation(0, 0, 0))
-				local value = managers.greed:loot_needed_for_gold_bar()
-				for i = 1,managers.challenge_cards.daily_reward,1 do
-					managers.greed:pickup_greed_item(value, greed_item)
-					managers.network:session():send_to_peers("greed_item_picked_up", greed_item, value)
-				end
-				World:delete_unit(greed_item)
+				-- This method isn't in u22, but will be added in the future
+				if managers.greed.secure_bounty then
+					managers.greed:secure_bounty(managers.challenge_cards.daily_reward)
+				else
+					-- Hack-y way of awarding gold by telling clients we secured a lot of paintings
+					-- Adjusted for difficulty loot bonus
+					local paintings_required = math.ceil(managers.challenge_cards.daily_reward /
+						managers.greed:greed_value_difficulty_multiplier())
 
+					for _ = 1, paintings_required, 1 do
+						-- Painting costs 1000g, so one gold bar
+						-- Second and third arguments are level_multiplier and "silent", both are unused
+						managers.loot:server_secure_loot('painting_sto', 1, false)
+					end
+				end
 				DailyRaidManager:send_message("chat_message_daily_finished", {
 					GOLD_BARS = managers.challenge_cards.daily_reward
 				})
 				DailyRaidManager:job_finished(managers.challenge_cards.daily_seed)
 			end
 		end
-    end
+	end
 end)
 
 --After restart card gets removed, so we have to apply it again
