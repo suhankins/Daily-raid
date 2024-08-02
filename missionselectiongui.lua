@@ -395,10 +395,6 @@ function MissionSelectionGui:_on_raid_clicked(raid_data, ...)
 
 	local stamp_texture = tweak_data.gui.icons[MissionSelectionGui.PAPER_STAMP_ICON]
 
-	if raid_tweak_data.consumable then
-		stamp_texture = tweak_data.gui.icons[MissionSelectionGui.PAPER_STAMP_ICON_CONSUMABLE]
-	end
-
 	self._soe_emblem:set_image(stamp_texture.texture)
 	self._soe_emblem:set_texture_rect(unpack(stamp_texture.texture_rect))
 	self._info_button:set_active(true)
@@ -408,6 +404,8 @@ function MissionSelectionGui:_on_raid_clicked(raid_data, ...)
 	self._intel_button:enable()
 	self._audio_button:show()
 	self._audio_button:enable()
+
+	self:_update_information_buttons(true, true, not raid_tweak_data.consumable)
 
 	self:_on_info_clicked(nil, true)
 	self._intel_image_grid:clear_selection()
