@@ -1,6 +1,6 @@
 --Removing suggest card button
 Hooks:PostHook(ReadyUpGui, "_set_card_selection_controls", "daily_raid_set_card_selection_controls", function(self)
-	if Network:is_server() and managers.challenge_cards.forced_card then
+	if Network:is_server() and DailyRaidManager.forced_card then
 		self._suggest_card_button:hide()
 		self._suggest_card_button:disable()
 	end
@@ -10,13 +10,13 @@ Hooks:PostHook(ReadyUpGui, "_update_peers", "daily_raid_update_peers", function(
 
 	--We have to suggest challenge card here or else the game crashes when
 	--you try to start a new daily after returning to camp from previous one
-	if Network:is_server() and managers.challenge_cards.forced_card then
+	if Network:is_server() and DailyRaidManager.forced_card then
 		local local_peer = managers.network:session():local_peer()
 		local local_peer_control = self._player_control_list[local_peer]
 		local challenge_cards = managers.challenge_cards:get_suggested_cards()
 		if challenge_cards and not challenge_cards[local_peer_control:params().peer_index] then
-			managers.challenge_cards:suggest_challenge_card(managers.challenge_cards.forced_card)
-			local card_data = tweak_data.challenge_cards:get_card_by_key_name(managers.challenge_cards.forced_card)
+			managers.challenge_cards:suggest_challenge_card(DailyRaidManager.forced_card)
+			local card_data = tweak_data.challenge_cards:get_card_by_key_name(DailyRaidManager.forced_card)
 			DailyRaidManager:send_message("chat_message_forced_challenge_card_applied", {
 				CARD_NAME = managers.localization:text(card_data.name)
 			})

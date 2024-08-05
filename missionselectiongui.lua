@@ -460,12 +460,12 @@ end)
 Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", function(self, job_id)
 	if Network:is_server() and self._daily then
 		--Saving all the stuff for daily cards
-		managers.challenge_cards.forced_card = self._daily.challenge_card
-		managers.challenge_cards.daily_reward = self._daily.reward
-		managers.challenge_cards.daily_seed = self._daily.seed
+		DailyRaidManager.forced_card = self._daily.challenge_card
+		DailyRaidManager.daily_reward = self._daily.reward
+		DailyRaidManager.daily_seed = self._daily.seed
 
 		DailyRaidManager:send_message("chat_message_daily_started", {
-			GOLD_BARS = managers.challenge_cards.daily_reward
+			GOLD_BARS = DailyRaidManager.daily_reward
 		})
 	else
 		DailyRaidManager:remove_daily()

@@ -69,6 +69,13 @@ if not DailyRaidManager then
         ["default"] = 15
     }
 
+    -- Currently selected forced card
+    DailyRaidManager.forced_card = nil
+    -- Reward for current daily bounty
+    DailyRaidManager.daily_reward = nil
+    -- Current daily bounty seed
+    DailyRaidManager.daily_seed = nil
+
     --Seed for random raid and card is current date at UTC+0
     --converted to number. i.e. 22072022 (dd,mm,yyyy)
     --Random numbers at the end are needed because otherwise random numbers don't feel random enough
@@ -96,11 +103,11 @@ if not DailyRaidManager then
         self:remove_daily()
     end
 
-    --Remove everything related to dailies
+    --Remove everything related to current daily
     function DailyRaidManager:remove_daily()
-        managers.challenge_cards.forced_card = nil
-		managers.challenge_cards.daily_reward = nil
-		managers.challenge_cards.daily_seed = nil
+        DailyRaidManager.forced_card = nil
+		DailyRaidManager.daily_reward = nil
+		DailyRaidManager.daily_seed = nil
     end
 
     function DailyRaidManager:generate_gold(data)
