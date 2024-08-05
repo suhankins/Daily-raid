@@ -110,7 +110,8 @@ if not DailyRaidManager then
 		DailyRaidManager.daily_seed = nil
     end
 
-    function DailyRaidManager:generate_gold(data)
+    -- Calculates amount of gold that should be granted for given thing
+    function DailyRaidManager:calculate_gold(data)
         local reward = self.rewards[data]
         if not reward then
             reward = self.rewards["default"]
@@ -131,7 +132,7 @@ if not DailyRaidManager then
 	    local cards_index = tweak_data.challenge_cards.cards_index
 	    local daily_forced_card
 	    local card_data
-	    -- Boost cards (i.e. more hp) don't really fit with the whole idea of daily raid
+	    -- Rerolling until we get a challenge card that isn't blocked
 	    repeat
 	    	daily_forced_card = cards_index[math.random(#cards_index)]
 	    	card_data = tweak_data.challenge_cards:get_card_by_key_name(daily_forced_card)
@@ -139,7 +140,7 @@ if not DailyRaidManager then
             and (not self:isCardInBlocklist(daily_forced_card))
 
         --Generating gold
-        local reward = self:generate_gold(daily_mission_name) + self:generate_gold(card_data.rarity)
+        local reward = self:calculate_gold(daily_mission_name) + self:calculate_gold(card_data.rarity)
         return seed, daily_mission_name, daily_forced_card, reward
     end
 
