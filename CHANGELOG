@@ -1,4 +1,4 @@
-1.16.2 - Fixed "attempt to index local 'remove_suggested_card' (a nil value)" crash, behind the scenes changes
+1.16.2 - Fixed "attempt to index local 'remove_suggested_card' (a nil value)" crash (by BangL), behind the scenes changes
 1.16.1 - Fixed info, audio, and intel buttons getting misaligned
 1.16 - Made compatible with u22
 1.15 - Removed outlaw raids from index
