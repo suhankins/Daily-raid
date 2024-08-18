@@ -10,7 +10,7 @@ if not DailyRaidManager then
         "ger_bridge", -- Trainwreck
         "settlement", -- Strongpoint
         "bunker_test", -- Bunker Busters
-        "tnd", -- Tiget Trap
+        "tnd", -- Tiger Trap
         "hunters", -- Hunters
         "convoy", -- Last Orders
         "spies_test", -- Extraction
@@ -23,9 +23,7 @@ if not DailyRaidManager then
         -- New cards, in Rex's description "Buggi or broken stuff atm"
         "ra_holiday_rush",
 		"ra_dooms_day",
-		"ra_roulette",
-		"free_crowbar",
-		"lucky_day"
+		"ra_roulette"
     }
 
     -- Checks if cards is on the block list
