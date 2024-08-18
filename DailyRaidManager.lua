@@ -27,7 +27,7 @@ if not DailyRaidManager then
     }
 
     -- Checks if cards is on the block list
-    function DailyRaidManager:isCardInBlocklist(card_name)
+    function DailyRaidManager:is_card_in_blocklist(card_name)
         for _, value in ipairs(self.CARD_BLOCKLIST) do
             if value == card_name then
                 return true
@@ -135,7 +135,7 @@ if not DailyRaidManager then
 	    	daily_forced_card = cards_index[math.random(#cards_index)]
 	    	card_data = tweak_data.challenge_cards:get_card_by_key_name(daily_forced_card)
 	    until card_data.card_category == tweak_data.challenge_cards.CARD_CATEGORY_CHALLENGE_CARD
-            and (not self:isCardInBlocklist(daily_forced_card))
+            and (not self:is_card_in_blocklist(daily_forced_card))
 
         --Generating gold
         local reward = self:calculate_gold(daily_mission_name) + self:calculate_gold(card_data.rarity)
