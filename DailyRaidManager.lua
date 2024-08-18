@@ -27,6 +27,7 @@ if not DailyRaidManager then
     }
 
     -- Checks if cards is on the block list
+    ---@param card_name string
     function DailyRaidManager:is_card_in_blocklist(card_name)
         for _, value in ipairs(self.CARD_BLOCKLIST) do
             if value == card_name then
@@ -68,10 +69,13 @@ if not DailyRaidManager then
     }
 
     -- Currently selected forced card
+    ---@type string
     DailyRaidManager.forced_card = nil
     -- Reward for current daily bounty
+    ---@type number
     DailyRaidManager.daily_reward = nil
     -- Current daily bounty seed
+    ---@type number
     DailyRaidManager.daily_seed = nil
 
     --Seed for random raid and card is current date at UTC+0
@@ -95,6 +99,7 @@ if not DailyRaidManager then
     end
 
     --Saves finished seed to the save file
+    ---@param seed number
     function DailyRaidManager:job_finished(seed)
         self.currentMod.Options:SetValue("last_finished", seed)
 		self.currentMod.Options:Save()
@@ -109,6 +114,7 @@ if not DailyRaidManager then
     end
 
     -- Calculates amount of gold that should be granted for given thing
+    ---@param data string
     function DailyRaidManager:calculate_gold(data)
         local reward = self.rewards[data]
         if not reward then
@@ -118,6 +124,7 @@ if not DailyRaidManager then
         return reward
     end
 
+    ---@return integer, string, string, number
     function DailyRaidManager:generate_daily()
         --Seeding the RNG
 	    local seed = self:seed_today()
@@ -128,7 +135,7 @@ if not DailyRaidManager then
 
 	    -- Generating random card
 	    local cards_index = tweak_data.challenge_cards.cards_index
-	    local daily_forced_card
+        local daily_forced_card
 	    local card_data
 	    -- Rerolling until we get a challenge card that isn't blocked
 	    repeat
@@ -142,6 +149,8 @@ if not DailyRaidManager then
         return seed, daily_mission_name, daily_forced_card, reward
     end
 
+    ---@param message_id string
+    ---@param params {[string]: any}
     function DailyRaidManager:send_message(message_id, params)
         --Adding a prefix to the message
         local message = "[" .. managers.localization:text("daily_daily_bounty") .. "] " .. managers.localization:text(message_id, params)
