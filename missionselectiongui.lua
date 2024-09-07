@@ -463,9 +463,13 @@ Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", functi
 		DailyRaidManager.forced_card = self._daily.challenge_card
 		DailyRaidManager.daily_reward = self._daily.reward
 		DailyRaidManager.daily_seed = self._daily.seed
+		local card_data = tweak_data.challenge_cards:get_card_by_key_name(DailyRaidManager.forced_card)
 
 		DailyRaidManager:send_message("chat_message_daily_started", {
-			GOLD_BARS = DailyRaidManager.daily_reward
+			GOLD_BARS = DailyRaidManager.daily_reward,
+			CARD_NAME = managers.localization:text(card_data.name),
+			POSITIVE_EFFECT = managers.localization:text(card_data.positive_description.desc_id, card_data.positive_description.desc_params),
+			NEGATIVE_EFFECT = managers.localization:text(card_data.negative_description.desc_id, card_data.negative_description.desc_params)
 		})
 	else
 		DailyRaidManager:remove_daily()

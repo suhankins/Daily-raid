@@ -150,7 +150,7 @@ if not DailyRaidManager then
     end
 
     ---@param message_id string
-    ---@param params {[string]: any}
+    ---@param[opt] params {[string]: any}
     function DailyRaidManager:send_message(message_id, params)
         --Adding a prefix to the message
         local message = "[" .. managers.localization:text("daily_daily_bounty") .. "] " .. managers.localization:text(message_id, params)
