@@ -1,50 +1,70 @@
 if not DailyRaidManager then
     DailyRaidManager = {}
 
-    -- Allowlist of raids
+    -- Allowlist of raids.
+    -- It's an allowlist in case people start modding in custom maps
     DailyRaidManager.RAID_ALLOWLIST = {
-        "flakturm", -- Odin's Fall
-        "gold_rush", -- Gold Rush
-        "train_yard", -- Amber Train
+        "flakturm",      -- Odin's Fall
+        "gold_rush",     -- Gold Rush
+        "train_yard",    -- Amber Train
         "radio_defense", -- Wiretap
-        "ger_bridge", -- Trainwreck
-        "settlement", -- Strongpoint
-        "bunker_test", -- Bunker Busters
-        "tnd", -- Tiger Trap
-        "hunters", -- Hunters
-        "convoy", -- Last Orders
-        "spies_test", -- Extraction
-        "silo", -- Countdown
-        "kelly" -- Kelly
+        "ger_bridge",    -- Trainwreck
+        "settlement",    -- Strongpoint
+        "bunker_test",   -- Bunker Busters
+        "tnd",           -- Tiger Trap
+        "hunters",       -- Hunters
+        "convoy",        -- Last Orders
+        "spies_test",    -- Extraction
+        "silo",          -- Countdown
+        "kelly"          -- Kelly
     }
 
-    -- Disallowed cards
-    DailyRaidManager.CARD_BLOCKLIST = {
-        -- New cards, in Rex's description "Buggi or broken stuff atm"
-        "ra_holiday_rush",
-		"ra_dooms_day",
-		"ra_roulette"
+    -- MUG team keeps adding new unfinished cards,
+    -- so it's better to have an allowlist instead of blocklist
+    DailyRaidManager.CARD_ALLOWLIST = {
+        "ra_on_the_scrounge",
+        "ra_no_backups",
+        "ra_this_is_gonna_hurt",
+        "ra_not_in_the_face",
+        "ra_loaded_for_bear",
+        "ra_total_carnage",
+        "ra_switch_hitter",
+        "ra_gunslingers",
+        "ra_fresh_troops",
+        "ra_dont_you_die_on_me",
+        "ra_no_second_chances",
+        "ra_a_perfect_score",
+        "ra_helmet_shortage",
+        "ra_hemorrhaging",
+        "ra_crab_people",
+        "op_limited_supplies",
+        "op_take_the_cannoli",
+        "op_everyones_a_tough_guy",
+        "op_nichtsplosions",
+        "op_war_weary",
+        "op_special_for_a_reason",
+        "op_dont_blink",
+        "op_bad_coffee",
+        "op_playing_for_keeps",
+        "op_silent_shout",
+        "op_blow_me",
+        "op_you_only_live_once",
+        "op_short_controlled_bursts",
+        "op_elite_opponents",
+        "op_and_headaches_for_all",
+        "ra_slasher_movie",
+        "ra_pumpkin_pie",
+        "ra_season_of_resurrection",
     }
-
-    -- Checks if cards is on the block list
-    ---@param card_name string
-    function DailyRaidManager:is_card_in_blocklist(card_name)
-        for _, value in ipairs(self.CARD_BLOCKLIST) do
-            if value == card_name then
-                return true
-            end
-        end
-        return false
-    end
 
     -- Used for saving last finished daily
     DailyRaidManager.currentMod = CurrentMod
 
     -- Required difficulty
-    -- 1 - Easy
-    -- 2 - Normal
-    -- 3 - Hard
-    -- 4 - Very Hard
+    -- 1. Easy
+    -- 2. Normal
+    -- 3. Hard
+    -- 4. Very Hard
     DailyRaidManager.required_difficulty = 3
 
     --Gold rewards for each raid and card rarity
@@ -69,13 +89,13 @@ if not DailyRaidManager then
     }
 
     -- Currently selected forced card
-    ---@type string
+    ---@type string | nil
     DailyRaidManager.forced_card = nil
     -- Reward for current daily bounty
-    ---@type number
+    ---@type number | nil
     DailyRaidManager.daily_reward = nil
     -- Current daily bounty seed
-    ---@type number
+    ---@type number | nil
     DailyRaidManager.daily_seed = nil
 
     --Seed for random raid and card is current date at UTC+0
@@ -102,15 +122,15 @@ if not DailyRaidManager then
     ---@param seed number
     function DailyRaidManager:job_finished(seed)
         self.currentMod.Options:SetValue("last_finished", seed)
-		self.currentMod.Options:Save()
+        self.currentMod.Options:Save()
         self:remove_daily()
     end
 
     --Remove everything related to current daily
     function DailyRaidManager:remove_daily()
         DailyRaidManager.forced_card = nil
-		DailyRaidManager.daily_reward = nil
-		DailyRaidManager.daily_seed = nil
+        DailyRaidManager.daily_reward = nil
+        DailyRaidManager.daily_seed = nil
     end
 
     -- Calculates amount of gold that should be granted for given thing
@@ -127,22 +147,15 @@ if not DailyRaidManager then
     ---@return integer, string, string, number
     function DailyRaidManager:generate_daily()
         --Seeding the RNG
-	    local seed = self:seed_today()
-	    math.randomseed(seed)
+        local seed = self:seed_today()
+        math.randomseed(seed)
 
-	    -- Generating random mission
-	    local daily_mission_name = self.RAID_ALLOWLIST[math.random(#self.RAID_ALLOWLIST)]
+        -- Generating random mission
+        local daily_mission_name = self.RAID_ALLOWLIST[math.random(#self.RAID_ALLOWLIST)]
 
-	    -- Generating random card
-	    local cards_index = tweak_data.challenge_cards.cards_index
-        local daily_forced_card
-	    local card_data
-	    -- Rerolling until we get a challenge card that isn't blocked
-	    repeat
-	    	daily_forced_card = cards_index[math.random(#cards_index)]
-	    	card_data = tweak_data.challenge_cards:get_card_by_key_name(daily_forced_card)
-	    until card_data.card_category == tweak_data.challenge_cards.CARD_CATEGORY_CHALLENGE_CARD
-            and (not self:is_card_in_blocklist(daily_forced_card))
+        -- Generating random card
+        local daily_forced_card = self.CARD_ALLOWLIST[math.random(#self.CARD_ALLOWLIST)]
+        local card_data = tweak_data.challenge_cards:get_card_by_key_name(daily_forced_card)
 
         --Generating gold
         local reward = self:calculate_gold(daily_mission_name) + self:calculate_gold(card_data.rarity)
@@ -153,7 +166,8 @@ if not DailyRaidManager then
     ---@param[opt] params {[string]: any}
     function DailyRaidManager:send_message(message_id, params)
         --Adding a prefix to the message
-        local message = "[" .. managers.localization:text("daily_daily_bounty") .. "] " .. managers.localization:text(message_id, params)
+        local message = "[" ..
+        managers.localization:text("daily_daily_bounty") .. "] " .. managers.localization:text(message_id, params)
         managers.chat:send_message(1, managers.network.account:username() or "SYSTEM", message)
     end
 end
