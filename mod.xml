@@ -9,8 +9,6 @@
 		<!--Daily RAID UI-->
 		<hook source_file="lib/managers/menu/raid_menu/missionselectiongui" file="missionselectiongui.lua"/>
 		<hook source_file="lib/managers/menu/raid_menu/controls/raidguicontrollistitemraids" file="raidguicontrollistitemraids.lua"/>
-		<!--Forced daily card-->
-		<hook source_file="lib/managers/menu/raid_menu/readyupgui" file="readyupgui.lua"/>
 		<!--Don't say "challenge card will be removed" on restart-->
 		<hook source_file="lib/managers/localizationmanager" file="localizationmanager.lua"/>
 		<!--Awarding gold and not removing card on restart-->
@@ -31,5 +29,5 @@
 	<auto_updates
         provider="modworkshop"
         id="38718"
-		version="1.16.4"/>
+		version="1.17.0"/>
 </table>

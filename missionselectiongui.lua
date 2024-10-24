@@ -477,6 +477,11 @@ Hooks:PostHook(MissionSelectionGui, "_start_job", "daily_raid_start_job", functi
 			POSITIVE_EFFECT = managers.localization:text(card_data.positive_description.desc_id, card_data.positive_description.desc_params),
 			NEGATIVE_EFFECT = managers.localization:text(card_data.negative_description.desc_id, card_data.negative_description.desc_params)
 		})
+
+		card_data.status = ChallengeCardsManager.CARD_STATUS_NORMAL
+		card_data.locked_suggestion = true
+
+		managers.challenge_cards:set_active_card(card_data)
 	else
 		DailyRaidManager:remove_daily()
 	end

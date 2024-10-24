@@ -1,3 +1,4 @@
+1.17.0 - Updated UI to fit better with Event panel; Forced Challenge Card now uses the same system as Event cards
 1.16.4 - Fixed unfinished challenge cards being chosen as Forced Challenge Card
 1.16.3 - Added card effects to "Host started a Daily Bounty" message
 1.16.2 - Fixed "attempt to index local 'remove_suggested_card' (a nil value)" crash (by BangL), behind the scenes changes
