@@ -108,7 +108,7 @@ Hooks:PostHook(MissionSelectionGui, "_layout_settings", "daily_raid_layout_setti
 
 	local width = 197
 	local height = 267
-	local card_y = 350
+	local card_y = self._right_panel:h() - height
 	local card_details_params = {
 		name = "card_details",
 		visible = true,
@@ -313,6 +313,10 @@ function MissionSelectionGui:_on_raid_clicked(raid_data, ...)
 		if self._card_panel then
 			self._card_panel:animate(callback(self, self, "_animate_hide_card")) --Hide card
 		end
+		-- Showing event if one is active
+		if self._event_display then
+			self._event_display:set_visible(true)
+		end
 
 		return
 	elseif raid_data.daily == self._daily then -- same daily is selected
@@ -433,7 +437,6 @@ Hooks:PostHook(MissionSelectionGui, "_check_difficulty_warning", "daily_raid_che
 
 		--Hiding card display if message appears, or else all the buttons will be on top of it
 		self._card_panel:animate(callback(self, self, "_animate_hide_card"))
-
 		self._difficulty_warning_panel:get_engine_panel():stop()
 		self._difficulty_warning_panel:get_engine_panel():animate(
 			callback(self, self, "_animate_slide_in_difficulty_warning_message"), message)
@@ -445,6 +448,9 @@ Hooks:PostHook(MissionSelectionGui, "_check_difficulty_warning", "daily_raid_che
 	else
 		--Showing card again, in case it was hidden
 		self._card_panel:animate(callback(self, self, "_animate_show_card"))
+		if self._event_display then
+			self._event_display:set_visible(false)
+		end
 
 		self._difficulty_warning_panel:get_engine_panel():stop()
 		self._difficulty_warning_panel:get_engine_panel():animate(callback(self, self,
