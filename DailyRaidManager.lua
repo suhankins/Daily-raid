@@ -55,6 +55,8 @@ if not DailyRaidManager then
         "ra_slasher_movie",
         "ra_pumpkin_pie",
         "ra_season_of_resurrection",
+        "ra_dooms_day",
+        "mag_roulette"
     }
 
     -- Used for saving last finished daily
