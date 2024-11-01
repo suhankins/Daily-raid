@@ -100,6 +100,8 @@ if not DailyRaidManager then
     ---@type number | nil
     DailyRaidManager.daily_seed = nil
 
+    -- Reimplementing Beardlib save functions to support sblt
+    
     function DailyRaidManager:LoadDefaults()
         local default_file = io.open(self._defaults_path, "r")
         if default_file then

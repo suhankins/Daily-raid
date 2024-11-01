@@ -29,7 +29,8 @@
         "GreedManager",
         "Rotation",
         "DailyRaidManager",
-        "DB"
+        "DB",
+        "json"
     ],
     "Lua.runtime.version": "LuaJIT"
 }

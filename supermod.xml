@@ -1,18 +1,10 @@
 <?xml version="1.0"?>
-<mod name="Daily raid"
+<mod
+    name="Daily raid"
     author="Punished Bernadetta &amp; BangL"
     description="Daily challenges that pay gold"
     version="1.17.0"
     color="191 0 73">
-
-    <updates>
-        <update provider="modworkshop" identifier="38718"/>
-    </updates>
-
-    <localization directory="loc">
-        <loc file="english.json" language="english"/>
-    </localization>
-
     <hooks>
         <!--Setting up some helpful functions-->
         <post hook_id="lib/setups/setup" script_path="DailyRaidManager.lua"/>
@@ -28,4 +20,12 @@
         <!--Sending explanation message to people who just dropped in-->
         <post hook_id="lib/managers/playermanager" script_path="playermanager.lua"/>
     </hooks>
+    <localization directory="loc">
+        <loc file="english.json" language="english"/>
+    </localization>
+    <updates>
+        <update
+            provider="modworkshop"
+            identifier="38718" />
+    </updates>
 </mod>
