@@ -1,33 +1,29 @@
 <table name="Daily raid"
-		author="Punished Bernadetta & BangL"
-		color="Color('bf204b')"
-		description="Daily challenges that pay gold",
-		global_key="DailyRaid">
+       author="Punished Bernadetta &amp; BangL"
+       color="Color('bf204b')"
+       description="Daily challenges that pay gold">
+
+    <auto_updates provider="modworkshop"
+                  id="38718"
+                  version="1.17.0" />
+
+    <localization directory="loc" default="english.json">
+        <loc file="english.json" language="english" />
+    </localization>
+
     <hooks>
-		<!--Setting up some helpful functions-->
-		<hook source_file="lib/setups/setup" file="DailyRaidManager.lua"/>
-		<!--Daily RAID UI-->
-		<hook source_file="lib/managers/menu/raid_menu/missionselectiongui" file="missionselectiongui.lua"/>
-		<hook source_file="lib/managers/menu/raid_menu/controls/raidguicontrollistitemraids" file="raidguicontrollistitemraids.lua"/>
-		<!--Don't say "challenge card will be removed" on restart-->
-		<hook source_file="lib/managers/localizationmanager" file="localizationmanager.lua"/>
-		<!--Awarding gold and not removing card on restart-->
-		<hook source_file="lib/managers/raidjobmanager" file="raidjobmanager.lua"/>
-		<!--Display a message when card fails and also one utility function to re-active a card-->
-		<hook source_file="lib/managers/challengecardsmanager" file="challengecardsmanager.lua"/>
-		<!--Sending explanation message to people who just dropped in-->
-		<hook source_file="lib/managers/playermanager" file="playermanager.lua"/>
+        <!-- Setting up some helpful functions -->
+        <hook source_file="lib/setups/setup" file="DailyRaidManager.lua" />
+        <!-- Daily RAID UI -->
+        <hook source_file="lib/managers/menu/raid_menu/missionselectiongui" file="missionselectiongui.lua" />
+        <hook source_file="lib/managers/menu/raid_menu/controls/raidguicontrollistitemraids" file="raidguicontrollistitemraids.lua" />
+        <!-- Don't say "challenge card will be removed" on restart -->
+        <hook source_file="lib/managers/localizationmanager" file="localizationmanager.lua" />
+        <!-- Awarding gold and not removing card on restart -->
+        <hook source_file="lib/managers/raidjobmanager" file="raidjobmanager.lua" />
+        <!-- Display a message when card fails and also one utility function to re-active a card -->
+        <hook source_file="lib/managers/challengecardsmanager" file="challengecardsmanager.lua" />
+        <!-- Sending explanation message to people who just dropped in -->
+        <hook source_file="lib/managers/playermanager" file="playermanager.lua" />
     </hooks>
-	<localization directory="loc" default="english.json">
-		<loc file="english.json" language="english"/>
-	</localization>
-	<options save_file="daily_raid.txt" build_menu="false">
-		<options>
-			<option name="last_finished" type="number" default_value="0"/>
-        </options>
-    </options>
-	<auto_updates
-        provider="modworkshop"
-        id="38718"
-		version="1.17.0"/>
 </table>

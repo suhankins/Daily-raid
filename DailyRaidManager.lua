@@ -1,5 +1,8 @@
 if not DailyRaidManager then
     DailyRaidManager = {}
+    DailyRaidManager._options_path = SavePath .. "daily_raid.txt"
+    DailyRaidManager._defaults_path = ModPath .. "defaults.json"
+    DailyRaidManager._options = {}
 
     -- Allowlist of raids.
     -- It's an allowlist in case people start modding in custom maps
@@ -59,9 +62,6 @@ if not DailyRaidManager then
         "mag_roulette"
     }
 
-    -- Used for saving last finished daily
-    DailyRaidManager.currentMod = CurrentMod
-
     -- Required difficulty
     -- 1. Easy
     -- 2. Normal
@@ -100,6 +100,48 @@ if not DailyRaidManager then
     ---@type number | nil
     DailyRaidManager.daily_seed = nil
 
+    function DailyRaidManager:LoadDefaults()
+        local default_file = io.open(self._defaults_path, "r")
+        if default_file then
+            self._options = json.decode(default_file:read("*all"))
+            default_file:close()
+        end
+    end
+
+    function DailyRaidManager:Load()
+        self:LoadDefaults()
+
+        local file = io.open(self._options_path, "r")
+        if file then
+            local config = json.decode(file:read("*all"))
+            file:close()
+            if config and type(config) == "table" then
+                for k, v in pairs(config) do
+                    self._options[k] = v
+                end
+            end
+        end
+    end
+
+    function DailyRaidManager:Save()
+        local file = io.open(self._options_path, "w+")
+        if file then
+            file:write(json.encode(self._options))
+            file:close()
+        end
+    end
+
+    function DailyRaidManager:GetOption(id)
+        return self._options[id]
+    end
+
+    function DailyRaidManager:SetOption(id, value, save)
+        self._options[id] = value
+        if save then
+            self:Save()
+        end
+    end
+
     --Seed for random raid and card is current date at UTC+0
     --converted to number. i.e. 22072022 (dd,mm,yyyy)
     --Random numbers at the end are needed because otherwise random numbers don't feel random enough
@@ -117,14 +159,13 @@ if not DailyRaidManager then
 
     --Checks if current date is not the same as the one saved
     function DailyRaidManager:can_do_new_daily()
-        return self.currentMod.Options:GetValue("last_finished") ~= self:seed_today()
+        return self:GetOption("last_finished") ~= self:seed_today()
     end
 
     --Saves finished seed to the save file
     ---@param seed number
     function DailyRaidManager:job_finished(seed)
-        self.currentMod.Options:SetValue("last_finished", seed)
-        self.currentMod.Options:Save()
+        self:SetOption("last_finished", seed, true)
         self:remove_daily()
     end
 
@@ -172,4 +213,6 @@ if not DailyRaidManager then
         managers.localization:text("daily_daily_bounty") .. "] " .. managers.localization:text(message_id, params)
         managers.chat:send_message(1, managers.network.account:username() or "SYSTEM", message)
     end
+
+    DailyRaidManager:Load()
 end

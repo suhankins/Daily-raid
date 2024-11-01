@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<mod name="Daily raid"
+    author="Punished Bernadetta &amp; BangL"
+    description="Daily challenges that pay gold"
+    version="1.17.0"
+    color="191 0 73">
+
+    <updates>
+        <update provider="modworkshop" identifier="38718"/>
+    </updates>
+
+    <localization directory="loc">
+        <loc file="english.json" language="english"/>
+    </localization>
+
+    <hooks>
+        <!--Setting up some helpful functions-->
+        <post hook_id="lib/setups/setup" script_path="DailyRaidManager.lua"/>
+        <!--Daily RAID UI-->
+        <post hook_id="lib/managers/menu/raid_menu/missionselectiongui" script_path="missionselectiongui.lua"/>
+        <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrollistitemraids" script_path="raidguicontrollistitemraids.lua"/>
+        <!--Don't say "challenge card will be removed" on restart-->
+        <post hook_id="lib/managers/localizationmanager" script_path="localizationmanager.lua"/>
+        <!--Awarding gold and not removing card on restart-->
+        <post hook_id="lib/managers/raidjobmanager" script_path="raidjobmanager.lua"/>
+        <!--Display a message when card fails and also one utility function to re-active a card-->
+        <post hook_id="lib/managers/challengecardsmanager" script_path="challengecardsmanager.lua"/>
+        <!--Sending explanation message to people who just dropped in-->
+        <post hook_id="lib/managers/playermanager" script_path="playermanager.lua"/>
+    </hooks>
+</mod>
