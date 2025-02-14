@@ -378,7 +378,7 @@ function MissionSelectionGui:_on_raid_clicked(raid_data, ...)
 	local card_data = tweak_data.challenge_cards:get_card_by_key_name(raid_data.daily.challenge_card)
 	local bonus_description, malus_description = managers.challenge_cards:get_card_description(raid_data.daily.challenge_card)
 
-	self._card_details:set_card(raid_data.daily.challenge_card)
+	self._card_details:set_card_details(raid_data.daily.challenge_card)
 	self._card_name_label_right:set_text(self:translate(card_data.name))
 	self._bonus_effect_label:set_text(bonus_description)
 	self._malus_effect_label:set_text(malus_description)
